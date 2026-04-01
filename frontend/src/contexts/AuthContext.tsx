@@ -54,6 +54,8 @@ export function AuthProvider({children}: {children: ReactNode}){
             } catch (error) {
                 setAvatar(null);
             }
+        }else{
+            setAvatar(null);
         }
     };
 
