@@ -1,0 +1,13 @@
+package com.multiwiki.auth;
+
+public enum EnumAuthErrorResponse {
+    AUTH_ERROR,
+    USERNAME_TAKEN,
+    EMAIL_ALREADY_EXISTS,
+    REFRESH_TOKEN_MISSING,
+    REFRESH_INVALID,
+    PASSWORD_INVALID,
+    CODE_INVALID,
+    FAILED_TO_SEND_MAIL,
+    EMAIL_IS_EQUAL_CURRENT
+}
