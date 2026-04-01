@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import { LocaleProvider } from './contexts/LocaleContext';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
           <Routes>
             <Route path='/' element={<Layout />}>
               <Route index element={<HomePage />} />
+              <Route path='login' element={<LoginPage />} />
             </Route>
           </Routes>
       </AuthProvider>
