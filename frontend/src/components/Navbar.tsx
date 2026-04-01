@@ -90,6 +90,10 @@ function Navbar() {
                             ))}
                         </ul>
                     </div>
+                    
+                    <div className="d-flex align-items-center gap-2">
+                        <Link to="/" className="navbar-brand fw-bold text-primary mb-0 fs-4">Multiwiki</Link>
+                    </div>
                 </div>
 
                 <div className="d-flex align-items-center gap-3">

@@ -9,6 +9,6 @@ export default interface Image{
 }
 
 export function getFullImageURL(image: Image): string {
-    const baseURL = import.meta.env.VITE_API_URL;
-    return `${baseURL}/${image.url}`;
+    // const baseURL = import.meta.env.VITE_API_URL;
+    return `api/${image.url}`;
 }
