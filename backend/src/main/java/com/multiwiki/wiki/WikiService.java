@@ -26,7 +26,7 @@ public class WikiService{
     public Wiki create(CreateWikiRequest request, User requester) throws IllegalArgumentException {
         String name = this.normalizeWikiName(request.getName());
 
-        if(wikiRepository.existsByName(name))
+        if(this.wikiRepository.existsByName(name))
             throw new RuntimeException("Wiki exists with name");
 
         Wiki wiki = new Wiki();
@@ -45,5 +45,9 @@ public class WikiService{
             throw new IllegalArgumentException("Wiki name is not should be empty");
 
         return name.trim().toLowerCase().replaceAll("\\s+", "_");
+    }
+
+    public boolean existsByName(String name){
+        return this.wikiRepository.existsByName(name);
     }
 }
