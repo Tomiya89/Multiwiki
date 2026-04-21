@@ -1,0 +1,26 @@
+.upload-zone {
+    border: 2px dashed #dee2e6 !important;
+
+    transition: all 0.2s ease-in-out;
+}
+
+.upload-zone:hover {
+    border-color: #0d6efd !important;
+    background-color: #f1f7ff !important;
+}
+
+.upload-label:hover .upload-icon-wrapper {
+    transform: translateY(-3px);
+}
+
+.upload-icon-wrapper {
+    transition: transform 0.2s ease;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.btn-danger {
+    z-index: 5;
+}
