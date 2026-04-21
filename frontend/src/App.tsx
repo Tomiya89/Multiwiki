@@ -11,6 +11,7 @@ import WikiLayout from './components/WikiLayout';
 import { WikiProvider } from './contexts/WikiContext';
 import WikiPage from './pages/wiki/WikiPage';
 import WikiSettingsPage from './pages/wiki/WikiSettingsPage';
+import WikiEditorPage from './pages/wiki/WikiEditorPage';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route path='wikis/:wikiName' element={<WikiLayout />}>
                 <Route index element={<WikiPage />} />
                 <Route path='settings' element={<WikiSettingsPage/>}/>
+                <Route path='edit' element={<WikiEditorPage/>} />
               </Route>
 
             </Route>

@@ -20,6 +20,7 @@ interface WikiContextType {
     uploadBackground: (file: File) => Promise<void>;
     deleteCard: () => Promise<void>;
     uploadCard: (file: File) => Promise<void>;
+    saveTranslation: (data: { title: string; body: string }) => Promise<void>;
 }
 
 const WikiContext = createContext<WikiContextType | undefined>(undefined);
@@ -183,6 +184,35 @@ export const WikiProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const saveTranslation = async (data: { title: string; body: string }) => {
+        if (!wiki) return;
+        setLoading(true);
+        try {
+            if(translation){
+                const response = await ApiClient.put<Translation>(
+                    `/wikis/${wiki.name}/translations/${currentLocale}`,
+                    data
+                );
+                setTranslation(response);
+            }else{
+                const response = await ApiClient.post<Translation>(
+                    `/wikis/${wiki.name}/translations`,
+                    {
+                        ...data,
+                        locale: currentLocale
+                    }
+                );
+                setTranslation(response);
+            }
+            
+        } catch (err: any) {
+            console.error("Save error:", err);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <WikiContext.Provider value={{
             wiki,
@@ -196,7 +226,8 @@ export const WikiProvider = ({ children }: { children: ReactNode }) => {
             uploadBackground,
             deleteBackground,
             uploadCard,
-            deleteCard
+            deleteCard,
+            saveTranslation
         }}>
             {children}
         </WikiContext.Provider>
