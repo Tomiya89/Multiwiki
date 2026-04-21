@@ -39,15 +39,28 @@ class ApiClient{
 
     private async _requestWithRetry<T>(config: RequestConfig) : Promise<T>{
         const response = await fetch(config.url, config);
+        let array;
 
-        if(response.ok)
-            return await response.json();
+        if(response.ok){
+            try{
+                return await response.json();
+            }catch{
+                throw new Error("NOT_FOUND");
+            }
+        }
 
         if(response.status === 401 && !config._retry)
             return this.handleUnauthorized(config);
         
-        const array = await response.json();
-        if(array?.error)
+        
+        try{
+            array = await response.json();
+        }
+        catch{
+            throw new Error("NOT_FOUND");
+        }
+        
+        if (array?.error)
             throw new Error(array?.error);
 
         throw new Error("UNKNOWN_ERROR");
