@@ -2,17 +2,20 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocale } from "../contexts/LocaleContext";
+import { useWiki } from "../contexts/WikiContext";
 import { getFullImageURL } from "../entities/Image";
 
 import { FiGlobe, FiUser, FiLogOut, FiMenu, FiX, FiChevronDown } from "react-icons/fi";
 
 import './Navbar.css';
 
+
 function Navbar() {
     const { getTranslate, languages, currentLocale, setLocale } = useLocale();
     const { user, avatar, isAuthenticated, logout, isLoading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const { wiki, translation } = useWiki();
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -94,6 +97,14 @@ function Navbar() {
                     <div className="d-flex align-items-center gap-2">
                         <Link to="/" className="navbar-brand fw-bold text-primary mb-0 fs-4">Multiwiki</Link>
                     </div>
+                    {wiki && (
+                        <div className="d-flex align-items-center animate-fade-in">
+                            <span className="text-muted mx-1 fw-light" style={{ fontSize: '1.5rem', opacity: 0.5 }}>/</span>
+                            <span className="fs-5 fw-semibold text-dark text-truncate" style={{ maxWidth: '200px' }}>
+                                {translation?.title || wiki?.name }
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 <div className="d-flex align-items-center gap-3">

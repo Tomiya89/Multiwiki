@@ -41,6 +41,23 @@
     animation: fadeIn 0.2s ease-out;
 }
 
+.navbar.sticky-top {
+    z-index: 2100;
+}
+
+.navbar .dropdown-menu {
+    z-index: 2200;
+    position: absolute;
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
+.transition-all {
+    transition: all 0.3s ease;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
