@@ -108,7 +108,7 @@ public class CategoryController {
 
     @PutMapping("/{name}")
     public ResponseEntity<?> changeCategory(@AuthenticationPrincipal User requester, @PathVariable("wikiName") String wikiName, @PathVariable("name") String name, @Valid @RequestBody CreateCategoryRequest request) {
-        Optional<Wiki> opt_wiki = this.wikiService.findByName(name);
+        Optional<Wiki> opt_wiki = this.wikiService.findByName(wikiName);
         if(opt_wiki.isEmpty())
             return ResponseEntity.notFound().build();
 
