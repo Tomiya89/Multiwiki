@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useCategory } from '../../../contexts/CategoryContext';
 import { useWiki } from '../../../contexts/WikiContext';
 import { useLocale } from '../../../contexts/LocaleContext';
@@ -19,8 +19,6 @@ import {
     FiChevronRight,
     FiPlus
 } from 'react-icons/fi';
-
-import "./CategoryPage.css";
 
 interface ArticleWithTranslation extends Article {
     translation?: {
