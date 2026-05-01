@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWiki } from '../../contexts/WikiContext';
 import { useLocale } from '../../contexts/LocaleContext';
 import { getFullImageURL } from '../../entities/Image';
@@ -11,13 +11,20 @@ import './WikiSettingsPage.css';
 
 function WikiSettingsPage() {
     const { user } = useAuth();
-    const { wiki, staff, background, card, uploadBackground, deleteBackground, uploadCard, deleteCard } = useWiki();
+    const { wiki, staff, background, card, uploadBackground, deleteBackground, uploadCard, deleteCard, loading } = useWiki();
     const { getTranslate } = useLocale();
     const navigate = useNavigate();
 
     const [newName, setNewName] = useState(wiki?.name || '');
     const [saving, setSaving] = useState(false);
+    const [error, setError] = useState('');
 
+    useEffect(() => {
+        if (wiki) 
+            setNewName(wiki.name);
+    }, [wiki]);
+
+    if (loading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
     if (staff?.role !== 'OWNER' && !(user !== null && wiki !== null && user.id === wiki.userId)) {
         return (
             <div className="alert alert-danger shadow-sm rounded-4 mt-4">
@@ -29,11 +36,13 @@ function WikiSettingsPage() {
     const handleUpdateName = async () => {
         if (!wiki || newName === wiki.name) return;
         setSaving(true);
+        setError('');
         try {
             await ApiClient.put(`/wikis/${wiki.name}`, { name: newName });
             navigate(`/wikis/${newName}/settings`);
-        } catch (err) {
-            alert("Error updating wiki name");
+        } catch (err: any) {
+            const errorKey = err?.message || 'UNKNOWN_ERROR';
+            setError(getTranslate(errorKey));
         } finally {
             setSaving(false);
         }
@@ -43,19 +52,25 @@ function WikiSettingsPage() {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        setError('');
         try {
             if (type === 'bg') await uploadBackground(file);
             else await uploadCard(file);
         } catch (err: any) {
-            alert(err.message || "Upload failed");
+            const errorKey = err?.message || 'UPLOAD_FAILED';
+            setError(getTranslate(errorKey));
         }
     };
-
-console.log(card);
 
     return (
         <div className="mx-auto" style={{ maxWidth: '800px' }}>
             <h2 className="fw-bold mb-4">{getTranslate('wikiSettings')}</h2>
+
+            {error && (
+                <div className="alert alert-danger border-0 shadow-sm rounded-4 mb-4 py-3">
+                    {error}
+                </div>
+            )}
 
             <div className="card border-0 shadow-sm rounded-4 mb-4">
                 <div className="card-body p-4">
@@ -70,13 +85,13 @@ console.log(card);
                                 type="text"
                                 className="form-control"
                                 value={newName}
-                                onChange={(e) => setNewName(e.target.value)}
+                                onChange={(e) => setNewName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
                             />
                         </div>
                         <button
                             className="btn btn-primary px-4"
                             onClick={handleUpdateName}
-                            disabled={saving || !newName}
+                            disabled={saving || !newName || newName === wiki?.name}
                         >
                             {saving ? <span className="spinner-border spinner-border-sm" /> : getTranslate('save')}
                         </button>

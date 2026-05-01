@@ -5,6 +5,7 @@ export default interface Translation{
     locale: string
     title: string
     body: string
+    infoboxData: string
     createdAt: string
-    updateAt: string
+    updatedAt: string
 }

@@ -1,22 +1,22 @@
 import React from 'react';
-import { Outlet, Link, useParams } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { useWiki } from '../contexts/WikiContext';
 import { useLocale } from '../contexts/LocaleContext';
 import { FiMessageSquare, FiGrid, FiHome, FiSettings } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
-import { getFullImageURL } from '../entities/Image'; // Импортируем утилиту
+import { getFullImageURL } from '../entities/Image';
 
-const WikiLayout: React.FC = () => {
+import "./WikiLayout.css";
+
+function WikiLayout() {
     const { user } = useAuth();
     const { staff, wiki, background } = useWiki();
     const { getTranslate } = useLocale();
-    const { wikiName } = useParams();
 
     const bgUrl = background ? getFullImageURL(background) : null;
 
     return (
-        <div className="d-flex position-relative" style={{ minHeight: 'calc(100vh - 72px)' }}>
-
+        <div className="d-flex flex-column flex-lg-row position-relative" style={{ minHeight: 'calc(100vh - 72px)' }}>
             {bgUrl && (
                 <div
                     className="position-fixed inset-0 w-100 h-100"
@@ -29,13 +29,12 @@ const WikiLayout: React.FC = () => {
                     }}
                 />
             )}
-
             <aside
-                className="border-end py-4 px-3"
+                className="wiki-sidebar border-end py-4 px-3"
                 style={{
                     width: '260px',
                     flexShrink: 0,
-                    zIndex: 1,
+                    zIndex: 2,
                     backgroundColor: 'rgba(248, 249, 250, 0.8)',
                     backdropFilter: 'blur(10px)',
                     WebkitBackdropFilter: 'blur(10px)'
@@ -47,17 +46,17 @@ const WikiLayout: React.FC = () => {
                     </h6>
                     <ul className="nav flex-column gap-1">
                         <li className="nav-item">
-                            <Link to={`/wikis/${wikiName}`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
+                            <Link to={`/wikis/${wiki?.name}`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
                                 <FiHome className="text-primary" /> {getTranslate('main')}
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to={`/wikis/${wikiName}/forums`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
+                            <Link to={`/wikis/${wiki?.name}/forums`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
                                 <FiMessageSquare className="text-primary" /> {getTranslate('forums')}
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to={`/wikis/${wikiName}/categories`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
+                            <Link to={`/wikis/${wiki?.name}/categories`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
                                 <FiGrid className="text-primary" /> {getTranslate('categories')}
                             </Link>
                         </li>
@@ -69,38 +68,28 @@ const WikiLayout: React.FC = () => {
                             <h6 className="text-uppercase text-muted small fw-bold mb-3 px-2">
                                 {getTranslate('management')}
                             </h6>
-                            <Link to={`/wikis/${wikiName}/settings`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
+                            <Link to={`/wikis/${wiki?.name}/settings`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
                                 <FiSettings className="text-primary" /> {getTranslate('wikiSettings')}
                             </Link>
                         </>
                     )}
                 </div>
             </aside>
-
-            <main className="flex-grow-1 p-4" style={{ zIndex: 1 }}>
+            <main className="flex-grow-1 p-2 p-md-4" style={{ zIndex: 1, minWidth: 0 }}>
                 <div
-                    className="mx-auto shadow-lg"
+                    className="mx-auto shadow-lg content-card"
                     style={{
-                        maxWidth: '1200px',
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                        maxWidth: '1600px',
+                        width: '100%',
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
                         borderRadius: '24px',
                         minHeight: '100%',
-                        padding: '2rem'
+                        padding: 'clamp(1rem, 3vw, 2.5rem)'
                     }}
                 >
                     <Outlet />
                 </div>
             </main>
-            <style>{`
-                .hover-effect {
-                    transition: all 0.2s ease;
-                }
-                .hover-effect:hover {
-                    background-color: rgba(13, 110, 253, 0.1);
-                    color: #0d6efd !important;
-                    transform: translateX(5px);
-                }
-            `}</style>
         </div>
     );
 };

@@ -1,17 +1,62 @@
 import React, { useMemo, useRef } from 'react';
-import ReactQuill from 'react-quill-new';
+import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import ApiClient from '../services/ApiClient';
-import { getFullImageURL } from '../entities/Image';
-import Image from '../entities/Image';
 
-interface EditorProps {
-    value: string;
-    onChange: (content: string) => void;
-    placeholder?: string;
+import ImageResize from './ImageResizeModule';
+
+import "./Editor.css";
+import ApiClient from '../services/ApiClient';
+import Image, { getFullImageURL } from '../entities/Image';
+
+if (!Quill.imports['modules/imageResize']) {
+    Quill.register('modules/imageResize', ImageResize as any);
 }
 
-const Editor: React.FC<EditorProps> = ({ value, onChange, placeholder }) => {
+const Parchment = Quill.import('parchment');
+const ImageFormat = Quill.import('formats/image');
+
+const WidthStyle = new Parchment.StyleAttributor('width', 'width', {
+    scope: Parchment.Scope.INLINE
+});
+const HeightStyle = new Parchment.StyleAttributor('height', 'height', {
+    scope: Parchment.Scope.INLINE
+});
+
+Quill.register(WidthStyle, true);
+Quill.register(HeightStyle, true);
+
+class CustomImage extends (ImageFormat as any) {
+    static formats(domNode: HTMLElement) {
+        let formats = super.formats(domNode);
+        if (domNode.hasAttribute('style')) {
+            formats.width = domNode.style.width;
+            formats.height = domNode.style.height;
+        }
+        return formats;
+    }
+    static value(domNode: HTMLElement) {
+        const value = super.value(domNode);
+        if (domNode.hasAttribute('style')) { }
+        return value;
+    }
+
+    format(name: string, value: any) {
+        if (name === 'width' || name === 'height') {
+            if (value) {
+                this.domNode.style[name] = value;
+                this.domNode.setAttribute(name, value.replace('px', ''));
+            } else {
+                this.domNode.style.removeProperty(name);
+                this.domNode.removeAttribute(name);
+            }
+        } else {
+            super.format(name, value);
+        }
+    }
+}
+Quill.register('formats/image', CustomImage, true);
+
+function Editor({ value, onChange, placeholder }: any) {
     const quillRef = useRef<ReactQuill>(null);
 
     const imageHandler = () => {
@@ -22,28 +67,27 @@ const Editor: React.FC<EditorProps> = ({ value, onChange, placeholder }) => {
 
         input.onchange = async () => {
             const file = input.files ? input.files[0] : null;
-            if (file) {
-                const formData = new FormData();
-                formData.append('file', file);
+            if (!file) return;
 
-                try {
-                    const response = await ApiClient.post<Image>(
-                        '/images/upload',
-                        formData
-                    );
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await ApiClient.post<Image>('/images/upload', formData);
 
-                    const url = getFullImageURL(response);
+                const imageUrl = getFullImageURL(response);
 
+                if (imageUrl) {
                     const quill = quillRef.current?.getEditor();
-                    if (quill) {
-                        const range = quill.getSelection();
-                        if (range) {
-                            quill.insertEmbed(range.index, 'image', url);
-                        }
+                    const range = quill?.getSelection();
+
+                    if (range) {
+                        quill.insertEmbed(range.index, 'image', imageUrl);
+                        quill.setSelection(range.index + 1);
                     }
-                } catch (error) {
-                    console.error('Upload failed:', error);
                 }
+            } catch (error) {
+                console.error("Ошибка при загрузке изображения:", error);
             }
         };
     };
@@ -51,25 +95,32 @@ const Editor: React.FC<EditorProps> = ({ value, onChange, placeholder }) => {
     const modules = useMemo(() => ({
         toolbar: {
             container: [
-                [{ 'header': [1, 2, 3, false] }],
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                [{ 'font': [] }],
+                [{ 'size': ['small', false, 'large', 'huge'] }],
                 ['bold', 'italic', 'underline', 'strike'],
-                [{ 'align': [] }],
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                ['link', 'image'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'script': 'sub' }, { 'script': 'super' }],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+                [{ 'direction': 'rtl' }, { 'align': [] }],
+                ['link', 'image', 'video'],
                 ['clean']
             ],
             handlers: {
-                image: imageHandler 
+                image: imageHandler
             }
-        }
+        },
+        imageResize: {},
     }), []);
-
+    
     const formats = [
-        'header',
-        'bold', 'italic', 'underline', 'strike',
-        'align',
-        'list', 'bullet',
-        'link', 'image'
+        'header', 'font', 'size',
+        'bold', 'italic', 'underline', 'strike', 'color', 'background',
+        'script', 'blockquote', 'code-block',
+        'list', 'bullet', 'indent',
+        'direction', 'align',
+        'link', 'image', 'video', 'width', 'height'
     ];
 
     return (
@@ -82,34 +133,9 @@ const Editor: React.FC<EditorProps> = ({ value, onChange, placeholder }) => {
                 modules={modules}
                 formats={formats}
                 placeholder={placeholder}
-                style={{ height: '400px', marginBottom: '50px' }}
             />
-
-            <style>{`
-                .rich-editor .ql-container {
-                    border-bottom-left-radius: 12px;
-                    border-bottom-right-radius: 12px;
-                    background: rgba(255, 255, 255, 0.5);
-                    font-size: 1.1rem;
-                    backdrop-filter: blur(5px);
-                }
-                .rich-editor .ql-toolbar {
-                    border-top-left-radius: 12px;
-                    border-top-right-radius: 12px;
-                    background: #f8f9fa;
-                    border-bottom: none;
-                }
-                .ql-editor {
-                    min-height: 350px;
-                }
-                .ql-editor img {
-                    max-width: 100%;
-                    height: auto;
-                    border-radius: 8px;
-                }
-            `}</style>
         </div>
     );
-};
+}
 
 export default Editor;

@@ -37,7 +37,7 @@ function HomePage() {
                             className="btn btn-light btn-lg fw-bold rounded-3 px-4 d-inline-flex align-items-center gap-2"
                             onClick={() => navigate('/create')}
                         >
-                            <FiPlusCircle /> {getTranslate('createBtn')}
+                            <FiPlusCircle /> {getTranslate('createWikiBtn')}
                         </button>
                     </div>
                 </div>

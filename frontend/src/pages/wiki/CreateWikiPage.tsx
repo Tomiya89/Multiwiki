@@ -84,7 +84,7 @@ function CreateWikiPage() {
                             {loading ? (
                                 <span className="spinner-border spinner-border-sm"></span>
                             ) : (
-                                <><FiPlusCircle /> {getTranslate('createBtn')}</>
+                                    <><FiPlusCircle /> {getTranslate('createWikiBtn')}</>
                             )}
                         </button>
                     </form>

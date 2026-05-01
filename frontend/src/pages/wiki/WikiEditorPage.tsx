@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWiki } from '../../contexts/WikiContext';
 import { useLocale } from '../../contexts/LocaleContext';
-import { FiSave, FiArrowLeft } from 'react-icons/fi';
 import Editor from '../../components/Editor';
+import InfoboxEditor from '../../components/InfoboxEditor';
+import { FiSave, FiArrowLeft } from 'react-icons/fi';
+
+import "./WikiEditorPage.css";
 import { useAuth } from '../../contexts/AuthContext';
 
 function WikiEditorPage() {
@@ -15,60 +18,83 @@ function WikiEditorPage() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
 
+    const [infobox, setInfobox] = useState({
+        mainImage: null as string | null,
+        fields: [] as any[],
+        sections: [] as any[]
+    });
+
+    if (staff && !(user !== null && wiki !== null && user.id === wiki.userId)) {
+        return (
+            <div className="alert alert-danger shadow-sm rounded-4 mt-4">
+                {getTranslate('accessDenied')}
+            </div>
+        );
+    }
+
     useEffect(() => {
         if (translation) {
             setTitle(translation.title || '');
             setContent(translation.body || '');
+            try {
+                const data = JSON.parse(translation.infoboxData || '{}');
+                setInfobox({
+                    mainImage: data.mainImage || null,
+                    fields: data.fields || [],
+                    sections: data.sections || []
+                });
+            } catch (e) {
+                console.error("Failed to parse infoboxData", e);
+            }
         }
     }, [translation]);
 
-    const canEdit = staff && ['OWNER', 'AUTHOR'].includes(staff.role) || (user && wiki && user?.id === wiki.userId);
-
-    if (!canEdit) return <div className="alert alert-danger">{getTranslate('accessDenied')}</div>;
-
     const handleSave = async () => {
-        try {
-            await saveTranslation({ title, body: content });
-            navigate(`/wikis/${wiki?.name}`);
-        } catch (err) {
-            alert("Save failed");
-        }
+        const fullData = {
+            title,
+            body: content,
+            infoboxData: JSON.stringify({
+                mainImage: infobox.mainImage,
+                fields: infobox.fields.filter(f => f.key.trim() || f.value.trim()),
+                sections: infobox.sections.filter(s => s.title.trim() || s.items.length > 0)
+            })
+        };
+        await saveTranslation(fullData);
+        navigate(`/wikis/${wiki?.name}`);
     };
 
     return (
-        <div className="container-fluid">
-            <div className="d-flex align-items-center justify-content-between mb-4">
-                <button onClick={() => navigate(-1)} className="btn btn-outline-secondary rounded-pill">
-                    <FiArrowLeft /> {getTranslate('back')}
+        <div className="container-fluid py-4" style={{ minHeight: '100vh', background: '#f8f9fa' }}>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <button onClick={() => navigate(-1)} className="btn btn-link text-dark text-decoration-none p-0 d-flex align-items-center gap-2 fw-medium">
+                    <FiArrowLeft /> {getTranslate('backBtn')}
                 </button>
-                <button 
-                    className="btn btn-primary rounded-pill px-4 shadow"
-                    onClick={handleSave}
-                    disabled={loading}
-                >
+                <button className="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onClick={handleSave} disabled={loading}>
                     {loading ? <span className="spinner-border spinner-border-sm me-2" /> : <FiSave className="me-2" />}
                     {getTranslate('save')}
                 </button>
             </div>
 
-            <div className="bg-white bg-opacity-75 backdrop-blur rounded-4 p-4 shadow-sm">
-                <input 
-                    type="text"
-                    className="form-control form-control-lg border-0 bg-transparent fw-bold mb-3"
-                    style={{ fontSize: '2rem' }}
-                    placeholder={getTranslate('titlePlaceholder')}
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                />
-                
-                <Editor 
-                    value={content} 
-                    onChange={setContent} 
-                    placeholder={getTranslate('startWriting')}
-                />
+            <div className="row g-4">
+                <div className="col-lg-8">
+                    <div className="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                        <input
+                            className="form-control form-control-lg border-0 bg-transparent fw-bold mb-3 p-0"
+                            style={{ fontSize: '2.5rem', outline: 'none', boxShadow: 'none' }}
+                            placeholder={getTranslate('editNameWiki')}
+                            value={title}
+                            onChange={e => setTitle(e.target.value)}
+                        />
+                        <Editor value={content} onChange={setContent} />
+                    </div>
+                </div>
+
+                <div className="col-lg-4">
+                    <InfoboxEditor data={infobox} onChange={setInfobox} />
+                </div>
             </div>
         </div>
     );
-};
+}
 
 export default WikiEditorPage;
