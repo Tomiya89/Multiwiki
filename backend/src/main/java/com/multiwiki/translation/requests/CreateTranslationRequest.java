@@ -32,6 +32,8 @@ public class CreateTranslationRequest {
     @NotBlank(message = "Body is required")
     private String body;
 
+    private String infoboxData;
+
     public CreateTranslationRequest(String title, String body, String locale) {
         this.title = title;
         this.body = body;

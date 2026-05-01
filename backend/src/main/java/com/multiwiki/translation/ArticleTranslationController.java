@@ -146,6 +146,7 @@ public class ArticleTranslationController {
         Translation translation = opt_translation.get();
         translation.setBody(request.getBody());
         translation.setTitle(request.getTitle());
+        translation.setInfoboxData(request.getInfoboxData());
 
         return ResponseEntity.ok().body(this.translationService.update(translation));
     }

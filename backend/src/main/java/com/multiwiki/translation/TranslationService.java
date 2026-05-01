@@ -54,6 +54,7 @@ public class TranslationService {
         translation.setLocale(request.getLocale());
         translation.setTitle(request.getTitle());
         translation.setBody(request.getBody());
+        translation.setInfoboxData(request.getInfoboxData());
 
         return this.translationRepository.save(translation);
     }

@@ -44,9 +44,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/auth/register/initiate").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/auth/register/confirm").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/auth/logout").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/auth/logout").authenticated()
 
                 //Получение аватарки пользователя(если есть)
                 .requestMatchers(HttpMethod.GET, "/api/users/{id}/avatar").permitAll()
@@ -60,8 +59,62 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/users/{id}/avatar").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/users/username/{username}/avatar").authenticated()
 
+
+                //Получить вики
+                .requestMatchers(HttpMethod.GET, "/api/wikis/{name}").permitAll()
+                //Создать вики
+                .requestMatchers(HttpMethod.POST, "/api/wikis/").authenticated()
+
+                //Получить фон вики
+                .requestMatchers(HttpMethod.GET, "/api/wikis/{name}/background").permitAll()
+                //Удалить фон вики
+                .requestMatchers(HttpMethod.DELETE, "/api/wikis/{name}/background").authenticated()
+                //Загрузить карточку вики
+                .requestMatchers(HttpMethod.POST, "/api/wikis/{name}/background").authenticated()
+
+                //Получить карточки вики
+                .requestMatchers(HttpMethod.GET, "/api/wikis/{name}/card").permitAll()
+                //Удалить карточку вики
+                .requestMatchers(HttpMethod.DELETE, "/api/wikis/{name}/card").authenticated()
+                //Загрузить карточку вики
+                .requestMatchers(HttpMethod.POST, "/api/wikis/{name}/card").authenticated()
+
+
+                //Получить категорию вики
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/categories/{name}").permitAll()
+                //Получить категории вики
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/categories").permitAll()
+                //Удалить категорию вики
+                .requestMatchers(HttpMethod.DELETE,"/api/wikis/{wikiName}/categories/{name}").authenticated()
+                //Создать категорию вики
+                .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/categories").authenticated()
+
+                //Получить пост вики
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/posts/{postId}").permitAll()
+                //Получить пост вики
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/posts").permitAll()
+                //Удалить пост вики
+                .requestMatchers(HttpMethod.DELETE,"/api/wikis/{wikiName}/posts/{postId}").authenticated()
+                //Создать пост вики
+                .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/posts").authenticated()
+                //Изменить пост вики
+                .requestMatchers(HttpMethod.PUT,"/api/wikis/{wikiName}/posts/{postId}").authenticated()
+
+                //Получить статью вики  
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/categories/{categoryName}/articles/{name}").permitAll()
+                //Получить статьи вики
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/categories/{categoryName}/articles").permitAll()
+                //Удалить статью вики
+                .requestMatchers(HttpMethod.DELETE,"/api/wikis/{wikiName}/categories/{categoryName}/articles/{name}").authenticated()
+                //Создать статью вики
+                .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/categories/{categoryName}/articles").authenticated()
+
+
                 //Получить пользователя по айди
                 .requestMatchers(HttpMethod.GET, "/api/users/{id}").permitAll()
+                // .requestMatchers(HttpMethod.POST, "/api/users/{id}").authenticated()
+                // .requestMatchers(HttpMethod.PUT, "/api/users/{id}").authenticated()
+                // .requestMatchers(HttpMethod.DELETE, "/api/users/{id}").authenticated()
 
                 //Получение информации о изображении
                 .requestMatchers(HttpMethod.GET, "/api/images/{id}").permitAll()
@@ -77,6 +130,41 @@ public class SecurityConfig {
                 //Языки
                 .requestMatchers(HttpMethod.GET, "/api/locale").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/locale/{locale}").permitAll()
+
+                //Права 
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/staffs").authenticated()
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/staffs/{userId}").authenticated()
+                .requestMatchers(HttpMethod.DELETE,"/api/wikis/{wikiName}/staffs/{userId}").authenticated()
+                .requestMatchers(HttpMethod.PUT,"/api/wikis/{wikiName}/staffs/{userId}").authenticated()
+                .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/staffs").authenticated()
+
+                //Переводы
+                //Вики
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/translations").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/translations/{locale}").permitAll()
+                .requestMatchers(HttpMethod.DELETE,"/api/wikis/{wikiName}/translations/{locale}").authenticated()
+                .requestMatchers(HttpMethod.PUT,"/api/wikis/{wikiName}/translations/{locale}").authenticated()
+                .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/translations").authenticated()
+                //Категории
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/categories/{categoryName}/translations").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/categories/{categoryName}/translations/{locale}").permitAll()
+                .requestMatchers(HttpMethod.DELETE,"/api/wikis/{wikiName}/categories/{categoryName}/translations/{locale}").authenticated()
+                .requestMatchers(HttpMethod.PUT,"/api/wikis/{wikiName}/categories/{categoryName}/translations/{locale}").authenticated()
+                .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/categories/{categoryName}/translations").authenticated()
+                //Статьи
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/categories/{categoryName}/articles/{articleName}/translations").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/categories/{categoryName}/articles/{articleName}/translations/{locale}").permitAll()
+                .requestMatchers(HttpMethod.DELETE,"/api/wikis/{wikiName}/categories/{categoryName}/articles/{articleName}/translations/{locale}").authenticated()
+                .requestMatchers(HttpMethod.PUT,"/api/wikis/{wikiName}/categories/{categoryName}/articles/{articleName}/translations/{locale}").authenticated()
+                .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/categories/{categoryName}/articles/{articleName}/translations").authenticated()
+
+                //Сообщения под вики
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/messages").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/messages").authenticated()
+
+                //Удалить сообщение
+                .requestMatchers(HttpMethod.DELETE,"/api/messages/{messageId}").authenticated()
+                .requestMatchers(HttpMethod.GET,"/api/messages/{messageId}/messages").permitAll()
 
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/uploads/**").permitAll()

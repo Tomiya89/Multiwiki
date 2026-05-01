@@ -32,7 +32,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/wikis/{wikiName}/categories/{categoryName}/translations")
 public class CategoryTranslationController {
-     @Autowired
+    @Autowired
     private TranslationService translationService;
 
     @Autowired
@@ -124,6 +124,7 @@ public class CategoryTranslationController {
         Translation translation = opt_translation.get();
         translation.setBody(request.getBody());
         translation.setTitle(request.getTitle());
+        translation.setInfoboxData(request.getInfoboxData());
 
         return ResponseEntity.ok().body(this.translationService.update(translation));
     }

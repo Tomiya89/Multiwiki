@@ -27,6 +27,8 @@ public class UpdateTranslationRequest {
     @NotBlank(message = "Body is required")
     private String body;
 
+    private String infoboxData;
+
     public UpdateTranslationRequest(String title, String body) {
         this.title = title;
         this.body = body;

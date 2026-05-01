@@ -41,6 +41,9 @@ public class Translation {
     @Column(name = "body", nullable = false)
     private String body;
 
+    @Column(name = "infoboxData")
+    private String infoboxData;
+
     @Column(name = "createdAt", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
