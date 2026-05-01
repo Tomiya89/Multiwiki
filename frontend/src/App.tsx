@@ -23,6 +23,7 @@ import { ArticleProvider } from './contexts/ArticleContext';
 import ArticlePage from './pages/wiki/article/ArticlePage';
 import ArticleEditorPage from './pages/wiki/article/ArticleEditorPage';
 import ArticleSettingsPage from './pages/wiki/article/ArticleSettingsPage';
+import WikiStaffsPage from './pages/wiki/WikiStaffsPage';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
                     <Route index element={<WikiPage />} />
                     <Route path='settings' element={<WikiSettingsPage/>}/>
                     <Route path='edit' element={<WikiEditorPage/>} />
+                    <Route path='staffs' element={<WikiStaffsPage />} />
                     <Route path='categories'>
                       <Route index element={<CategoriesPage />} />
                       <Route path='create' element={<CreateCategoryPage />} />

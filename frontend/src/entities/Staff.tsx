@@ -1,3 +1,5 @@
+import User from "./User"
+
 export default interface Staff{
     id: number
     wikiId: number
@@ -6,4 +8,14 @@ export default interface Staff{
     createdBy: number
     createdAt: string
     updatedAt: string
+}
+
+export default interface StaffDTO{
+    id: number
+    role: string
+    user: User
+}
+
+export default interface StaffsCount{
+    count: number
 }

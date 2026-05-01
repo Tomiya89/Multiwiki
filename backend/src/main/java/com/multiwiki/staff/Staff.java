@@ -2,11 +2,16 @@ package com.multiwiki.staff;
 
 import java.time.LocalDateTime;
 
+import com.multiwiki.user.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -29,8 +34,9 @@ public class Staff {
     @Column(name = "wikiId", nullable = false)
     private int wikiId;
 
-    @Column(name = "userId", nullable = false)
-    private int userId;
+    @ManyToOne(fetch = FetchType.LAZY) 
+    @JoinColumn(name = "userId")
+    private User user;
 
     @Column(name = "role", nullable = false)
     private String role;

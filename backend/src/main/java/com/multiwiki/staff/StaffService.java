@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +33,7 @@ public class StaffService{
             Staff staff = new Staff();
             staff.setWikiId(request.getWiki().getId());
             staff.setRole(role);
-            staff.setUserId(request.getUser().getId());
+            staff.setUser(request.getUser());
             staff.setCreatedBy(request.getRequester().getId());
             return this.staffRepository.save(staff);
         } catch (IllegalArgumentException e) {
@@ -63,5 +65,12 @@ public class StaffService{
             throw new IllegalArgumentException("This user is not have staff");
 
         return EnumStaffRole.valueOf(staff.get().getRole());
+    }
+
+    public Page<Staff> getStaffs(int wikiId, String query, Pageable pageable) {
+        if (query != null && !query.isEmpty()) {
+            return staffRepository.findByWikiIdAndUserUsernameContainingIgnoreCase(wikiId, query, pageable);
+        }
+        return staffRepository.findByWikiIdWithUser(wikiId, pageable);
     }
 }

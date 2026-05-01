@@ -4,13 +4,14 @@ import ApiClient from '../services/ApiClient';
 import { useLocale } from './LocaleContext';
 import type Wiki from "../entities/Wiki";
 import type Translation from "../entities/Translation";
-import type Staff from "../entities/Staff";
+import type StaffDTO from "../entities/Staff";
 import type Image from "../entities/Image";
+import { useAuth } from './AuthContext';
 
 interface WikiContextType {
     wiki: Wiki | null;
     translation: Translation | null;
-    staff: Staff | null;
+    staff: StaffDTO | null;
     availableTranslations: Translation[];
     loading: boolean;
     error: string | null;
@@ -26,13 +27,14 @@ interface WikiContextType {
 const WikiContext = createContext<WikiContextType | undefined>(undefined);
 
 export const WikiProvider = ({ children }: { children: ReactNode }) => {
+    const { user, isLoading } = useAuth();
     const location = useLocation();
     const { getTranslate, currentLocale } = useLocale();
 
     const [background, setBackground] = useState<Image | null>(null);
     const [card, setCard] = useState<Image | null>(null);
     const [wiki, setWiki] = useState<Wiki | null>(null);
-    const [staff, setStaff] = useState<Staff | null>(null);
+    const [staff, setStaff] = useState<StaffDTO | null>(null);
     const [translation, setTranslation] = useState<Translation | null>(null);
     const [availableTranslations, setAvailableTranslations] = useState<Translation[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -66,7 +68,7 @@ export const WikiProvider = ({ children }: { children: ReactNode }) => {
                     setWiki(currentWiki);
 
                     try {
-                        const staffData = await ApiClient.get<Staff>(`/wikis/${nameInUrl}/staff/me`);
+                        const staffData = await ApiClient.get<StaffDTO>(`/wikis/${nameInUrl}/staffs/me`);
                         setStaff(staffData);
                     } catch {
                         setStaff(null);
@@ -110,7 +112,7 @@ export const WikiProvider = ({ children }: { children: ReactNode }) => {
         };
 
         fetchWikiData();
-    }, [location.pathname, currentLocale, getTranslate]);
+    }, [isLoading, location.pathname, currentLocale, getTranslate]);
 
     const deleteBackground = async () => {
         try {

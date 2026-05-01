@@ -8,8 +8,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import WikiInfobox from '../../components/Infobox';
 import parseHeadings from "../../functions/parseHeadings";
 
-import "./WikiPage.css";
-
 function WikiPage() {
     const { user } = useAuth();
     const { wiki, translation, staff, availableTranslations, loading } = useWiki();

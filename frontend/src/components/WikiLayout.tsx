@@ -71,6 +71,9 @@ function WikiLayout() {
                             <Link to={`/wikis/${wiki?.name}/settings`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
                                 <FiSettings className="text-primary" /> {getTranslate('wikiSettings')}
                             </Link>
+                            <Link to={`/wikis/${wiki?.name}/staffs`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
+                                <FiSettings className="text-primary" /> {getTranslate('manageStaff')}
+                            </Link>
                         </>
                     )}
                 </div>
