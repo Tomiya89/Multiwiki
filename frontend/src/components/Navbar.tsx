@@ -3,19 +3,23 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocale } from "../contexts/LocaleContext";
 import { useWiki } from "../contexts/WikiContext";
+import { useCategory } from "../contexts/CategoryContext";
+import { useArticle } from "../contexts/ArticleContext";
 import { getFullImageURL } from "../entities/Image";
 
 import { FiGlobe, FiUser, FiLogOut, FiMenu, FiX, FiChevronDown } from "react-icons/fi";
 
 import './Navbar.css';
 
-
 function Navbar() {
     const { getTranslate, languages, currentLocale, setLocale } = useLocale();
     const { user, avatar, isAuthenticated, logout, isLoading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const { wiki, translation } = useWiki();
+
+    const { wiki, translation: wikiTrans } = useWiki();
+    const { category, translation: catTrans } = useCategory();
+    const { article, translation: artTrans } = useArticle();
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -29,7 +33,7 @@ function Navbar() {
             const target = event.target as Node;
             if (userDropdownRef.current && !userDropdownRef.current.contains(target))
                 setIsUserDropdownOpen(false);
-            if (langDropdownRef.current && !langDropdownRef.current.contains(target)) 
+            if (langDropdownRef.current && !langDropdownRef.current.contains(target))
                 setIsLangDropdownOpen(false);
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -44,12 +48,9 @@ function Navbar() {
     }, [location.pathname]);
 
     const handleLogout = async (e: React.MouseEvent) => {
-        console.log("!#!@#KDASPODP");
         e.preventDefault();
         e.stopPropagation();
-
         setIsUserDropdownOpen(false);
-
         await logout();
         navigate("/");
     };
@@ -66,7 +67,6 @@ function Navbar() {
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top shadow-sm">
             <div className="container-fluid px-4">
-
                 <div className="d-flex align-items-center">
                     <div className="dropdown me-3" ref={langDropdownRef}>
                         <button
@@ -76,7 +76,6 @@ function Navbar() {
                             <FiGlobe className="text-primary" />
                             <span className="fw-bold">{currentLocale.toUpperCase()}</span>
                         </button>
-
                         <ul className={`dropdown-menu shadow border-0 mt-2 ${isLangDropdownOpen ? 'show' : ''}`}>
                             {languages.map((lang) => (
                                 <li key={lang.locale}>
@@ -93,17 +92,35 @@ function Navbar() {
                             ))}
                         </ul>
                     </div>
-                    
+
                     <div className="d-flex align-items-center gap-2">
                         <Link to="/" className="navbar-brand fw-bold text-primary mb-0 fs-4">Multiwiki</Link>
                     </div>
+
                     {wiki && (
-                        <div className="d-flex align-items-center animate-fade-in">
-                            <span className="text-muted mx-1 fw-light" style={{ fontSize: '1.5rem', opacity: 0.5 }}>/</span>
-                            <span className="fs-5 fw-semibold text-dark text-truncate" style={{ maxWidth: '200px' }}>
-                                {translation?.title || wiki?.name }
-                            </span>
-                        </div>
+                        <nav aria-label="breadcrumb" className="breadcrumb-wrapper ms-3 ps-3 border-start">
+                            <ol className="breadcrumb mb-0 align-items-center">
+                                <li className="breadcrumb-item">
+                                    <Link to={`/wikis/${wiki.name}`} className="text-decoration-none">
+                                        {wikiTrans?.title || wiki.name}
+                                    </Link>
+                                </li>
+
+                                {category && (
+                                    <li className="breadcrumb-item">
+                                        <Link to={`/wikis/${wiki.name}/categories/${category.name}`} className="text-decoration-none">
+                                            {catTrans?.title || category.name}
+                                        </Link>
+                                    </li>
+                                )}
+
+                                {article && (
+                                    <li className="breadcrumb-item active text-muted" aria-current="page">
+                                        {artTrans?.title || article.name}
+                                    </li>
+                                )}
+                            </ol>
+                        </nav>
                     )}
                 </div>
 
