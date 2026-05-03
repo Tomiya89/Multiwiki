@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.multiwiki.Image.responses.ImageErrorResponse;
 import com.multiwiki.user.EnumUserRole;
 import com.multiwiki.user.User;
 
@@ -60,7 +61,7 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.OK).body(image);
         }
         catch(IOException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ImageErrorResponse(EnumImageResponse.IMAGE_INTERNAL_ERROR));
         }
     }
     
@@ -74,7 +75,7 @@ public class ImageController {
         Image image = opt_image.get();
 
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != image.getUserId())
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("У вас не достаточно прав");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ImageErrorResponse(EnumImageResponse.IMAGE_NO_RIGHTS));
 
         this.imageService.deleteImage(image);
 
@@ -91,7 +92,7 @@ public class ImageController {
         Image image = opt_image.get();
 
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != image.getUserId())
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("У вас не достаточно прав");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ImageErrorResponse(EnumImageResponse.IMAGE_NO_RIGHTS));
 
         this.imageService.deleteImage(image);
 
@@ -108,7 +109,7 @@ public class ImageController {
         Image image = opt_image.get();
 
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != image.getUserId())
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("У вас не достаточно прав");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ImageErrorResponse(EnumImageResponse.IMAGE_NO_RIGHTS));
 
         this.imageService.deleteImage(image);
 
