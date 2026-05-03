@@ -24,6 +24,8 @@ import ArticlePage from './pages/wiki/article/ArticlePage';
 import ArticleEditorPage from './pages/wiki/article/ArticleEditorPage';
 import ArticleSettingsPage from './pages/wiki/article/ArticleSettingsPage';
 import WikiStaffsPage from './pages/wiki/WikiStaffsPage';
+import ForumsPage from './pages/wiki/post/ForumsPage';
+import CreatePostPage from './pages/wiki/post/CreateForumPage';
 
 function App() {
   return (
@@ -46,6 +48,14 @@ function App() {
                     <Route path='settings' element={<WikiSettingsPage/>}/>
                     <Route path='edit' element={<WikiEditorPage/>} />
                     <Route path='staffs' element={<WikiStaffsPage />} />
+
+                    {/* Post */}
+                    <Route path='forums'>
+                      <Route index element={<ForumsPage />} />
+                      <Route path='create' element={<CreatePostPage />} />
+                    </Route>
+
+                    {/* Category */}
                     <Route path='categories'>
                       <Route index element={<CategoriesPage />} />
                       <Route path='create' element={<CreateCategoryPage />} />
@@ -53,6 +63,8 @@ function App() {
                         <Route index element={<CategoryPage />} />
                         <Route path='edit' element={<CategoryEditorPage/>} />
                         <Route path='settings' element={<CategorySettingsPage />} />
+
+                        {/* Article */}
                         <Route path='articles'>
                           <Route path='create' element={<CreateArticlePage />}></Route>
                           <Route path=':articleName'>

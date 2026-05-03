@@ -1,9 +1,11 @@
+import User from "./User"
+
 export default interface Post{
     id: number
     wikiId: number
     title: string
     body: string
-    userId: number
+    user: User
     likesCount: number
     createdAt: string
     updatedAt: string
