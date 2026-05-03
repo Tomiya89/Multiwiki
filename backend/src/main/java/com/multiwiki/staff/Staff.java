@@ -3,6 +3,7 @@ package com.multiwiki.staff;
 import java.time.LocalDateTime;
 
 import com.multiwiki.user.User;
+import com.multiwiki.wiki.Wiki;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,8 +32,9 @@ public class Staff {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "wikiId", nullable = false)
-    private int wikiId;
+    @ManyToOne(fetch = FetchType.LAZY) 
+    @JoinColumn(name = "wikiId")
+    private Wiki wiki;
 
     @ManyToOne(fetch = FetchType.LAZY) 
     @JoinColumn(name = "userId")

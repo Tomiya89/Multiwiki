@@ -10,28 +10,30 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.multiwiki.staff.requests.CreateStaffRequest;
+import com.multiwiki.user.User;
+import com.multiwiki.wiki.Wiki;
 
 @Service
 public class StaffService{
     @Autowired
     private StaffRepository staffRepository;
 
-    public List<Staff> findByWikiId(int wikiId){
-        return this.staffRepository.findByWikiId(wikiId);
+    public List<Staff> findByWiki(Wiki wiki){
+        return this.staffRepository.findByWiki(wiki);
     }
 
-    public Optional<Staff> findByWikiIdAndUserId(int wikiId, int userId){
-        return this.staffRepository.findByWikiIdAndUserId(wikiId, userId);
+    public Optional<Staff> findByWikiAndUser(Wiki wiki, User user){
+        return this.staffRepository.findByWikiAndUser(wiki, user);
     }
 
     public Staff create(CreateStaffRequest request) throws Exception, AccessDeniedException {
-        if(this.staffRepository.existsByWikiIdAndUserId(request.getWiki().getId(), request.getUser().getId()))
+        if(this.staffRepository.existsByWikiAndUser(request.getWiki(), request.getUser()))
             throw new AccessDeniedException("User is have role");
 
         try {
             EnumStaffRole role = EnumStaffRole.valueOf(request.getRole());
             Staff staff = new Staff();
-            staff.setWikiId(request.getWiki().getId());
+            staff.setWiki(request.getWiki());
             staff.setRole(role);
             staff.setUser(request.getUser());
             staff.setCreatedBy(request.getRequester().getId());
@@ -49,28 +51,32 @@ public class StaffService{
         this.staffRepository.delete(entity);
     }
 
-    public boolean isHaveStaff(int wikiId, int userId){
-        Optional<Staff> staff = this.staffRepository.findByWikiIdAndUserId(wikiId, userId);
+    public boolean isHaveStaff(Wiki wiki, User user){
+        Optional<Staff> staff = this.staffRepository.findByWikiAndUser(wiki, user);
         return staff.isPresent();
     }
 
-    public boolean isOwner(int wikiId, int userId){
-        Optional<Staff> staff = this.staffRepository.findByWikiIdAndUserId(wikiId, userId);
+    public boolean isOwner(Wiki wiki, User user){
+        Optional<Staff> staff = this.staffRepository.findByWikiAndUser(wiki, user);
         return staff.isPresent() ? staff.get().getRole().equals(EnumStaffRole.OWNER.name()) : false;
     }
 
-    public EnumStaffRole getRole(int wikiId, int userId) throws IllegalArgumentException{
-        Optional<Staff> staff = this.staffRepository.findByWikiIdAndUserId(wikiId, userId);
+    public EnumStaffRole getRole(Wiki wiki, User user) throws IllegalArgumentException{
+        Optional<Staff> staff = this.staffRepository.findByWikiAndUser(wiki, user);
         if(staff.isEmpty())
             throw new IllegalArgumentException("This user is not have staff");
 
         return EnumStaffRole.valueOf(staff.get().getRole());
     }
 
-    public Page<Staff> getStaffs(int wikiId, String query, Pageable pageable) {
+    public Page<Staff> getStaffs(Wiki wiki, String query, Pageable pageable) {
         if (query != null && !query.isEmpty()) {
-            return staffRepository.findByWikiIdAndUserUsernameContainingIgnoreCase(wikiId, query, pageable);
+            return staffRepository.findByWikiAndUserUsernameContainingIgnoreCase(wiki, query, pageable);
         }
-        return staffRepository.findByWikiIdWithUser(wikiId, pageable);
+        return staffRepository.findByWikiWithUser(wiki, pageable);
+    }
+
+    public Page<Staff> findByUser(User user, Pageable pageable){
+        return this.staffRepository.findByUser(user, pageable);
     }
 }

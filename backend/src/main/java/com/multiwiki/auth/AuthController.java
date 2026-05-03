@@ -185,7 +185,7 @@ public class AuthController {
     @PostMapping("/change-email")
     public ResponseEntity<?> changeEmail(@AuthenticationPrincipal User requester, @Valid @RequestBody ChangeEmailRequest request) {
         try {
-            this.emailChangeService.initiateEmailChange(requester, request);
+            return this.emailChangeService.initiateEmailChange(requester, request);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

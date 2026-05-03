@@ -1,25 +1,72 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocale } from '../contexts/LocaleContext';
-import { FiPlusCircle, FiBookOpen, FiGlobe, FiArrowRight } from 'react-icons/fi';
+import { FiPlusCircle, FiBookOpen, FiGlobe, FiArrowRight, FiSearch } from 'react-icons/fi';
+import Wiki from '../entities/Wiki';
+import PageResponse from '../entities/PageResponse';
+import ApiClient from '../services/ApiClient';
+import { getFullImageURL } from '../entities/Image';
 
 function HomePage() {
     const navigate = useNavigate();
-    const { getTranslate } = useLocale();
-    const [randomWikis, setRandomWikis] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { getTranslate, currentLocale } = useLocale();
+
+    const [wikis, setWikis] = useState<Wiki[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [page, setPage] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+
+    const bottomRef = useRef<HTMLDivElement>(null);
+
+    const fetchWikis = async (pageNumber: number, isNewSearch: boolean = false) => {
+        if (loading) return;
+
+        setLoading(true);
+        try {
+            const url = `/wikis?title=${encodeURIComponent(searchQuery)}&locale=${currentLocale}&page=${pageNumber}&size=6`;
+            const response = await ApiClient.get<PageResponse<Wiki>>(url);
+
+            const newWikis = response.content;
+            setWikis(prev => isNewSearch ? newWikis : [...prev, ...newWikis]);
+            setHasMore(!response.last);
+        } catch (error) {
+            console.error("Error fetching wikis:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+        setWikis([]);
+        setPage(0);
+        setHasMore(true);
+        fetchWikis(0, true);
+    }, [currentLocale]);
 
     useEffect(() => {
-    
-        setTimeout(() => {
-            setRandomWikis([
-                { id: 1, title: "История Рима", desc: "Все о великой империи", imageUrl: null },
-                { id: 2, title: "Рецепты", desc: "Кулинарная книга сообщества", imageUrl: null },
-                { id: 3, title: "C++ Guide", desc: "Справочник по системному программированию", imageUrl: null },
-            ]);
-            setLoading(false);
-        }, 800);
-    }, []);
+        if (page > 0) {
+            fetchWikis(page, false);
+        }
+    }, [page]);
+
+    const handleSearch = () => {
+        setWikis([]);
+        setPage(0);
+        setHasMore(true);
+        fetchWikis(0, true);
+    };
+
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            const [entry] = entries;
+            if (entry.isIntersecting && hasMore && !loading && wikis.length > 0) {
+                setPage(prev => prev + 1);
+            }
+        }, { threshold: 0.5 });
+
+        if (bottomRef.current) observer.observe(bottomRef.current);
+        return () => observer.disconnect();
+    }, [hasMore, loading, wikis.length]);
 
     return (
         <div className="home-page-wrapper">
@@ -44,39 +91,54 @@ function HomePage() {
             </header>
 
             <div className="container">
+                <div className="mb-5">
+                    <div className="input-group shadow-sm">
+                        <input
+                            type="text"
+                            className="form-control form-control-lg border-end-0"
+                            placeholder={getTranslate("search")}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                        />
+                        <button className="btn btn-primary px-4" onClick={handleSearch}>
+                            <FiSearch />
+                        </button>
+                    </div>
+                </div>
+
                 <div className="d-flex align-items-center gap-2 mb-4">
                     <FiBookOpen className="text-primary" size={24} />
                     <h2 className="fw-bold h4 mb-0">{getTranslate('featuredTitle')}</h2>
                 </div>
 
                 <div className="row">
-                    {loading ? (
-                        <div className="text-center py-5 w-100">
-                            <div className="spinner-border text-primary"></div>
-                        </div>
-                    ) : (
-                        randomWikis.map((wiki) => (
-                            <div key={wiki.id} className="col-md-4 mb-4">
-                                <div className="card shadow-sm border-0 h-100 auth-card">
-                                    {wiki.imageUrl ? (
-                                        <img src={wiki.imageUrl} className="card-img-top rounded-top-3" alt={wiki.title} style={{ height: '160px', objectFit: 'cover' }} />
-                                    ) : (
-                                        <div className="bg-light d-flex align-items-center justify-content-center rounded-top-3" style={{ height: '160px' }}>
-                                            <FiBookOpen size={48} className="text-muted opacity-25" />
-                                        </div>
-                                    )}
-
-                                    <div className="card-body p-4 d-flex flex-column">
-                                        <h5 className="fw-bold mb-2">{wiki.title}</h5>
-                                        <p className="small text-muted flex-grow-1">{wiki.desc}</p>
-                                        <button className="btn btn-outline-primary btn-sm rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 mt-3">
-                                            {getTranslate('viewBtn')} <FiArrowRight size={16} />
-                                        </button>
+                    {wikis.map((wiki) => (
+                        <div key={wiki.id} className="col-md-4 mb-4">
+                            <div className="card shadow-sm border-0 h-100 auth-card">
+                                {wiki.card ? (
+                                    <img src={getFullImageURL(wiki.card)} className="card-img-top rounded-top-3" alt={wiki.translations?.[0].title} style={{ height: '160px', objectFit: 'cover' }} />
+                                ) : (
+                                    <div className="bg-light d-flex align-items-center justify-content-center rounded-top-3" style={{ height: '160px' }}>
+                                        <FiBookOpen size={48} className="text-muted opacity-25" />
                                     </div>
+                                )}
+                                <div className="card-body p-4 d-flex flex-column">
+                                    <h5 className="fw-bold mb-2">{wiki.translations?.[0].title}</h5>
+                                    <button
+                                        className="btn btn-outline-primary btn-sm rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 mt-3"
+                                        onClick={() => navigate(`/wikis/${wiki.name}`)}
+                                    >
+                                        {getTranslate('viewBtn')} <FiArrowRight size={16} />
+                                    </button>
                                 </div>
                             </div>
-                        ))
-                    )}
+                        </div>
+                    ))}
+                </div>
+
+                <div ref={bottomRef} className="py-4 text-center">
+                    {loading && <div className="spinner-border text-primary"></div>}
                 </div>
             </div>
         </div>

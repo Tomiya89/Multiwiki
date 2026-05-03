@@ -56,7 +56,7 @@ public class PostController {
         }
 
         Wiki wiki = opt_wiki.get();
-        Page<Post> posts = this.postService.findAllByWikiId(wiki.getId(), title, pageable);
+        Page<Post> posts = this.postService.findAllByWikiId(wiki, title, pageable);
         
         return ResponseEntity.ok().body(posts.map(post -> new PostDTO(post)));
     }

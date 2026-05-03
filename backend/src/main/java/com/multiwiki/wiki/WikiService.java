@@ -1,10 +1,16 @@
 package com.multiwiki.wiki;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.multiwiki.translation.Translation;
+import com.multiwiki.translation.TranslationDTO;
+import com.multiwiki.translation.TranslationRepository;
 import com.multiwiki.user.User;
 import com.multiwiki.wiki.requests.CreateWikiRequest;
 
@@ -12,6 +18,23 @@ import com.multiwiki.wiki.requests.CreateWikiRequest;
 public class WikiService{
     @Autowired
     private WikiRepository wikiRepository;
+
+    @Autowired
+    private TranslationRepository translationRepository;
+
+    public Page<Wiki> searchWikis(String title, String locale, Pageable pageable) {
+        String searchLocale = (locale == null || locale.isEmpty()) ? "en" : locale;
+        
+        Page<Translation> translations = translationRepository.findWikisByLocalizedTitle(title, searchLocale, pageable);
+        
+        return translations.map(t -> {
+            Wiki wiki = wikiRepository.findById(t.getTranslatableId())
+                                     .orElseThrow(() -> new RuntimeException("Wiki not found"));
+            
+            wiki.setTranslations(Collections.singletonList(new TranslationDTO(t)));
+            return wiki;
+        });
+    }
 
     public Optional<Wiki> findById(int id){
         return this.wikiRepository.findById(id);
@@ -49,5 +72,9 @@ public class WikiService{
 
     public boolean existsByName(String name){
         return this.wikiRepository.existsByName(name);
+    }
+
+    public Page<Wiki> findByUserId(int userId, Pageable pageable){
+        return this.wikiRepository.findByUserId(userId, pageable);
     }
 }

@@ -1,9 +1,10 @@
 import User from "./User"
+import Wiki from "./Wiki"
 
 export default interface Staff{
     id: number
-    wikiId: number
-    userId: number
+    wiki: Wiki
+    user: User
     role: string
     createdBy: number
     createdAt: string

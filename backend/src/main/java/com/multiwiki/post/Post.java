@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.multiwiki.user.User;
+import com.multiwiki.wiki.Wiki;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,8 +34,9 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "wikiId", nullable = false)
-    private int wikiId;
+    @ManyToOne(fetch = FetchType.LAZY) 
+    @JoinColumn(name = "wikiId")
+    private Wiki wiki;
 
     @Column(name = "title", nullable = false)
     private String title;

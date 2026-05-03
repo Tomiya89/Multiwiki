@@ -11,6 +11,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.multiwiki.post.requests.CreatePostRequest;
+import com.multiwiki.user.User;
+import com.multiwiki.wiki.Wiki;
 
 import jakarta.persistence.criteria.Predicate;
 
@@ -22,7 +24,7 @@ public class PostService {
     public Optional<Post> findPostByIdAndWikiID(int id, int wikiId){
         Optional<Post> post = this.postRepository.findById(id);
         if(post.isPresent()){
-            if(post.get().getWikiId() == wikiId)
+            if(post.get().getWiki().getId() == wikiId)
                 return post;
         }
         return Optional.empty();
@@ -31,7 +33,7 @@ public class PostService {
     public Post create(CreatePostRequest request) {
         Post post = new Post();
         post.setUser(request.getRequester());
-        post.setWikiId(request.getWiki().getId());
+        post.setWiki(request.getWiki());
         post.setBody(request.getBody());
         post.setTitle(request.getTitle());
         return this.postRepository.save(post);
@@ -45,19 +47,32 @@ public class PostService {
         this.update(request);
     }
 
-    public Page<Post> findAllByWikiId(int wikiId, String title, Pageable pageable) {
+    public Page<Post> findAllByWikiId(Wiki wiki, String title, Pageable pageable) {
         Specification<Post> spec = (root, query, cb) -> {
         List<Predicate> predicates = new ArrayList<>();
-        predicates.add(cb.equal(root.get("wikiId"), wikiId));
+            predicates.add(cb.equal(root.get("wiki"), wiki));
 
-        predicates.add(cb.notEqual(root.get("status"), EnumPostStatus.DELETED.name()));
+            predicates.add(cb.notEqual(root.get("status"), EnumPostStatus.DELETED.name()));
 
-        if (title != null && !title.isEmpty()) {
-            predicates.add(cb.like(cb.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
-        }
-        return cb.and(predicates.toArray(new Predicate[0]));
-    };
+            if (title != null && !title.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
 
-    return postRepository.findAll(spec, pageable);
+        return postRepository.findAll(spec, pageable);
+    }
+
+    public Page<Post> findAllByUser(User user, Pageable pageable){
+        Specification<Post> spec = (root, query, cb) -> {
+        List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("user"), user));
+
+            predicates.add(cb.notEqual(root.get("status"), EnumPostStatus.DELETED.name()));
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return postRepository.findAll(spec, pageable);
     }
 }

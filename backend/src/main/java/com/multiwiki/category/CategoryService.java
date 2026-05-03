@@ -49,7 +49,7 @@ public class CategoryService{
         Wiki wiki = request.getWiki();
         User requester = request.getRequester();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki.getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki, requester))
             throw new AccessDeniedException("У вас нет прав");
 
         Category category = new Category();
@@ -70,7 +70,7 @@ public class CategoryService{
 
         User requester = request.getRequester();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != category.get().getUserId() && !this.staffService.isHaveStaff(request.getWiki().getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != category.get().getUserId() && !this.staffService.isHaveStaff(request.getWiki(), requester))
             throw new AccessDeniedException("У вас нет прав");
 
         this.categoryRepository.delete(category.get());

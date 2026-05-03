@@ -44,7 +44,7 @@ public class ArticleService {
         Category category = request.getCategory();
         User requester = request.getRequester();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki.getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki, requester))
             throw new AccessDeniedException("У вас нет прав");
 
         if(this.articleRepository.existsByNameAndWikiIdAndCategoryId(name, wiki.getId(), category.getId()))
@@ -67,7 +67,7 @@ public class ArticleService {
         Category category = request.getCategory();
         User requester = request.getRequester();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki.getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki, requester))
             throw new AccessDeniedException("У вас нет прав");
 
         Optional<Article> article = this.articleRepository.findByNameAndWikiIdAndCategoryId(name, wiki.getId(), category.getId());

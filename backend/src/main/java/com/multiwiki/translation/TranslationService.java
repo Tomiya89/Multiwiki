@@ -45,7 +45,7 @@ public class TranslationService {
 
         User requester = request.getRequester();
         Wiki wiki = request.getWiki();
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki.getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki, requester))
             throw new AccessDeniedException("У вас нет прав");
 
         Translation translation = new Translation();

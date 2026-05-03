@@ -134,7 +134,7 @@ public class CategoryController {
 
         Wiki wiki = opt_wiki.get();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki.getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki, requester))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new CategoryErrorResponse(EnumCategoryResponse.CATEGORY_NO_RIGHTS));
 
         Optional<Category> opt_category = this.categoryService.findByNameAndWikiId(name, wiki.getId());

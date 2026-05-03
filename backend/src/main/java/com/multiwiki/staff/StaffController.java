@@ -52,7 +52,7 @@ public class StaffController {
 
         Wiki wiki = opt_wiki.get();
 
-        Optional<Staff> requesterStaff = this.staffService.findByWikiIdAndUserId(wiki.getId(), requester.getId());
+        Optional<Staff> requesterStaff = this.staffService.findByWikiAndUser(wiki, requester);
         if(requesterStaff.isEmpty())
             return ResponseEntity.notFound().build();
 
@@ -70,14 +70,14 @@ public class StaffController {
 
         Wiki wiki = opt_wiki.get();
 
-        Optional<Staff> requesterStaff = this.staffService.findByWikiIdAndUserId(wiki.getId(), requester.getId());
+        Optional<Staff> requesterStaff = this.staffService.findByWikiAndUser(wiki, requester);
         
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && (requesterStaff.isEmpty() && wiki.getUserId() != requester.getId() || !requesterStaff.isEmpty() && requesterStaff.get().getRole() != EnumStaffRole.OWNER.name()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StaffErrorResponse(EnumStaffResponse.STAFF_ACCESS_DENIED));
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
-        Page<Staff> staffPage = this.staffService.getStaffs(wiki.getId(), query, pageable);
+        Page<Staff> staffPage = this.staffService.getStaffs(wiki, query, pageable);
 
         Page<StaffResponseDTO> response = staffPage.map(StaffResponseDTO::new);
 
@@ -92,12 +92,17 @@ public class StaffController {
         
         Wiki wiki = opt_wiki.get();
 
-        Optional<Staff> requesterStaff = this.staffService.findByWikiIdAndUserId(wiki.getId(), requester.getId());
+        Optional<User> opt_user = this.userService.getById(userId);
+        if(opt_user.isEmpty())
+            return ResponseEntity.notFound().build();
+        User user = opt_user.get();
+
+        Optional<Staff> requesterStaff = this.staffService.findByWikiAndUser(wiki, requester);
         
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && (requesterStaff.isEmpty() && wiki.getUserId() != requester.getId() || !requesterStaff.isEmpty() && requesterStaff.get().getRole() != EnumStaffRole.OWNER.name()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StaffErrorResponse(EnumStaffResponse.STAFF_ACCESS_DENIED));
 
-        Optional<Staff> staff = this.staffService.findByWikiIdAndUserId(wiki.getId(), userId);
+        Optional<Staff> staff = this.staffService.findByWikiAndUser(wiki, user);
         if(staff.isEmpty())
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok().body(new StaffResponseDTO(staff.get()));
@@ -111,7 +116,7 @@ public class StaffController {
         
         Wiki wiki = opt_wiki.get();
     
-        Optional<Staff> requesterStaff = this.staffService.findByWikiIdAndUserId(wiki.getId(), requester.getId());
+        Optional<Staff> requesterStaff = this.staffService.findByWikiAndUser(wiki, requester);
         
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && (requesterStaff.isEmpty() && wiki.getUserId() != requester.getId() || !requesterStaff.isEmpty() && requesterStaff.get().getRole() != EnumStaffRole.OWNER.name()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StaffErrorResponse(EnumStaffResponse.STAFF_ACCESS_DENIED));
@@ -153,12 +158,17 @@ public class StaffController {
         
         Wiki wiki = opt_wiki.get();
         
-        Optional<Staff> requesterStaff = this.staffService.findByWikiIdAndUserId(wiki.getId(), requester.getId());
+        Optional<User> opt_user = this.userService.getById(userId);
+        if(opt_user.isEmpty())
+            return ResponseEntity.notFound().build();
+        User user = opt_user.get();
+
+        Optional<Staff> requesterStaff = this.staffService.findByWikiAndUser(wiki, requester);
 
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && (requesterStaff.isEmpty() && wiki.getUserId() != requester.getId() || !requesterStaff.isEmpty() && requesterStaff.get().getRole() != EnumStaffRole.OWNER.name()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StaffErrorResponse(EnumStaffResponse.STAFF_ACCESS_DENIED));
 
-        Optional<Staff> opt_staff = this.staffService.findByWikiIdAndUserId(wiki.getId(), userId);
+        Optional<Staff> opt_staff = this.staffService.findByWikiAndUser(wiki, user);
 
         if(opt_staff.isEmpty())
             return ResponseEntity.notFound().build();
@@ -184,12 +194,17 @@ public class StaffController {
         
         Wiki wiki = opt_wiki.get();
 
-        Optional<Staff> requesterStaff = this.staffService.findByWikiIdAndUserId(wiki.getId(), requester.getId());
+        Optional<User> opt_user = this.userService.getById(userId);
+        if(opt_user.isEmpty())
+            return ResponseEntity.notFound().build();
+        User user = opt_user.get();
+
+        Optional<Staff> requesterStaff = this.staffService.findByWikiAndUser(wiki, requester);
         
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && (requesterStaff.isEmpty() && wiki.getUserId() != requester.getId() || !requesterStaff.isEmpty() && requesterStaff.get().getRole() != EnumStaffRole.OWNER.name()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StaffErrorResponse(EnumStaffResponse.STAFF_ACCESS_DENIED));
 
-        Optional<Staff> opt_staff = this.staffService.findByWikiIdAndUserId(wiki.getId(), userId);
+        Optional<Staff> opt_staff = this.staffService.findByWikiAndUser(wiki, user);
 
         if(opt_staff.isEmpty())
             return ResponseEntity.notFound().build();

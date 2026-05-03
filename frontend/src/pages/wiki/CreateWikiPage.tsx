@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocale } from '../../contexts/LocaleContext';
 import { FiPlusCircle, FiType, FiLink, FiArrowLeft } from 'react-icons/fi';
 import ApiClient from '../../services/ApiClient'; 
 import type Wiki from "../../entities/Wiki";
+import { useAuth } from '../../contexts/AuthContext';
 
 function CreateWikiPage() {
     const navigate = useNavigate();
+    const { user, isLoading } = useAuth();
     const { getTranslate } = useLocale();
 
     const [url, setUrl] = useState('');
@@ -31,6 +33,13 @@ function CreateWikiPage() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
+    }, [isLoading, user]);
 
     return (
         <div className="auth-container d-flex align-items-center justify-content-center animate-fade-in">

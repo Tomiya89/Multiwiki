@@ -6,6 +6,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +30,7 @@ import com.multiwiki.common.responses.Response;
 import com.multiwiki.staff.StaffService;
 import com.multiwiki.translation.EnumTranslatableType;
 import com.multiwiki.translation.TranslationDTO;
+import com.multiwiki.translation.TranslationRepository;
 import com.multiwiki.translation.TranslationService;
 import com.multiwiki.user.EnumUserRole;
 import com.multiwiki.user.User;
@@ -50,6 +55,9 @@ public class WikiController {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private TranslationRepository translationRepository;
+
     @GetMapping("/{name}")
     public ResponseEntity<Wiki> getByID(@PathVariable String name) {
         Optional<Wiki> opt_wiki = this.wikiService.findByName(name);
@@ -62,6 +70,16 @@ public class WikiController {
         wiki.setTranslations(translations);
 
         return ResponseEntity.ok(wiki);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<Wiki>> getAllWikis(
+            @RequestParam(required = false, defaultValue = "") String title,
+            @RequestParam(required = false, defaultValue = "en") String locale,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Wiki> wikis = this.wikiService.searchWikis(title, locale, pageable);
+        
+        return ResponseEntity.ok(wikis);
     }
 
     @PostMapping
@@ -79,7 +97,7 @@ public class WikiController {
         if(wiki.isEmpty())
             return ResponseEntity.notFound().build();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.get().getUserId() && !this.staffService.isOwner(wiki.get().getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.get().getUserId() && !this.staffService.isOwner(wiki.get(), requester))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new WikiErrorResponse(EnumWikiResponse.WIKI_NO_RIGHTS));
 
         this.imageService.deleteImage(wiki.get().getBackground());
@@ -93,7 +111,7 @@ public class WikiController {
         if(wiki.isEmpty())
             return ResponseEntity.notFound().build();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.get().getUserId() && !this.staffService.isOwner(wiki.get().getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.get().getUserId() && !this.staffService.isOwner(wiki.get(), requester))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new WikiErrorResponse(EnumWikiResponse.WIKI_NO_RIGHTS));
 
         this.imageService.deleteImage(wiki.get().getCard());
@@ -109,7 +127,7 @@ public class WikiController {
 
         Wiki wiki = opt_wiki.get();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isOwner(wiki.getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isOwner(wiki, requester))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new WikiErrorResponse(EnumWikiResponse.WIKI_NO_RIGHTS));
 
         if(wiki.getBackground() != null)
@@ -132,7 +150,7 @@ public class WikiController {
 
         Wiki wiki = opt_wiki.get();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isOwner(wiki.getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isOwner(wiki, requester))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new WikiErrorResponse(EnumWikiResponse.WIKI_NO_RIGHTS));
 
         if(wiki.getCard() != null)
@@ -155,7 +173,7 @@ public class WikiController {
 
         Wiki wiki = opt_wiki.get();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isOwner(wiki.getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isOwner(wiki, requester))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new WikiErrorResponse(EnumWikiResponse.WIKI_NO_RIGHTS));
 
         if(wikiService.existsByName(request.getName()))

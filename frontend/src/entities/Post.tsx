@@ -1,8 +1,9 @@
 import User from "./User"
+import Wiki from "./Wiki"
 
 export default interface Post{
     id: number
-    wikiId: number
+    wiki: Wiki
     title: string
     body: string
     user: User

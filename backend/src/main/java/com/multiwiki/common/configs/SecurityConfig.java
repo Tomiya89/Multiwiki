@@ -175,7 +175,11 @@ public class SecurityConfig {
                 //Удалить сообщение
                 .requestMatchers(HttpMethod.DELETE,"/api/messages/{messageId}").authenticated()
 
+                .requestMatchers(HttpMethod.DELETE,"/api/users/{userId}/staffs").authenticated()
+
                 .requestMatchers(HttpMethod.GET,"/api/messages/{messageId}/messages").permitAll()
+
+                .requestMatchers(HttpMethod.GET,"/api/wikis").permitAll()
 
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/uploads/**").permitAll()

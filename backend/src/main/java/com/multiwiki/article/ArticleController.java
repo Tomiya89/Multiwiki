@@ -157,7 +157,7 @@ public class ArticleController {
 
         Wiki wiki = opt_wiki.get();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki.getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki, requester))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ArticleErrorResponse(EnumArticleResponse.ARTICLE_NO_RIGHTS));
 
         Optional<Category> opt_category = this.categoryService.findByNameAndWikiId(categoryName, wiki.getId());

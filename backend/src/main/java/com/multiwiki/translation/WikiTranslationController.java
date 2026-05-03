@@ -94,7 +94,7 @@ public class WikiTranslationController {
 
         Wiki wiki = opt_wiki.get();
 
-        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki.getId(), requester.getId()))
+        if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isHaveStaff(wiki, requester))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new TranslationErrorResponse(EnumTranslationResponse.TRANSLATION_NO_RIGHTS));
 
         Optional<Translation> opt_translation = this.translationService.findByTranslatableTypeAndTranslatableIdAndLocale(EnumTranslatableType.WIKI, wiki.getId(), locale);
