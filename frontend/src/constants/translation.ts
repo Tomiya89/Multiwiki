@@ -98,6 +98,8 @@ export const translations: Record<string, Record<string, string>> = {
         name: "Название",
         likes: "Лайки",
         url: "Cсылка",
+        postTitlePlaceholder: "Заголовок поста",
+        postBodyPlaceholder: "О чем хотите рассказать?",
         date: "Дата",
         createPost: "Создать пост",
         addingToCategory: "Добавление в категорию",
