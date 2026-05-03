@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "private": true,
+  "homepage": "https://tomiya89.github.io/Multiwiki",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
