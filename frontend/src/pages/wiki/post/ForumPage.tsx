@@ -6,6 +6,7 @@ import { FiThumbsUp, FiEdit2, FiArrowLeft } from 'react-icons/fi';
 import ApiClient from '../../../services/ApiClient';
 import Post from '../../../entities/Post';
 import { getFullImageURL } from '../../../entities/Image';
+import MessageList from '../../../components/MessageList';
 
 const ForumPage = () => {
     const { wikiName, postId } = useParams();
@@ -78,9 +79,10 @@ const ForumPage = () => {
                 </div>
 
                 <div
-                    className="ql-editor p-0"
+                    className="ql-editor pb-3 border-bottom"
                     dangerouslySetInnerHTML={{ __html: post.body }}
                 />
+                <MessageList apiUrl={`/wikis/${wikiName}/posts/${postId}/messages`} />
             </div>
         </div>
     );

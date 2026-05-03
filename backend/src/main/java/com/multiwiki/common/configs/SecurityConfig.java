@@ -162,9 +162,19 @@ public class SecurityConfig {
                 //Сообщения под вики
                 .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/messages").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/messages").authenticated()
+                //Сообщения под постами
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/posts/{postId}/messages").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/posts/{postId}/messages").authenticated()
+                //категории
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/categories/{categoryName}/messages").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/categories/{categoryName}/messages").authenticated()
+                //статьи
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/categories/{categoryName}/articles/{articleName}/messages").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/categories/{categoryName}/articles/{articleName}/messages").authenticated()
 
                 //Удалить сообщение
                 .requestMatchers(HttpMethod.DELETE,"/api/messages/{messageId}").authenticated()
+
                 .requestMatchers(HttpMethod.GET,"/api/messages/{messageId}/messages").permitAll()
 
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

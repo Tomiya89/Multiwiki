@@ -20,6 +20,7 @@ import {
     FiChevronRight,
     FiPlus
 } from 'react-icons/fi';
+import MessageList from '../../../components/MessageList';
 
 function CategoryPage() {
     const { user } = useAuth();
@@ -119,12 +120,16 @@ function CategoryPage() {
                                             {getTranslate('articles')}
                                         </a>
                                     )}
+                                    <a href="#comments-section" onClick={(e) => handleNavClick(e, 'comments-section')}
+                                        className="nav-link py-1 toc-link fw-bold text-primary mt-2">
+                                        {getTranslate('comments')}
+                                    </a>
                                 </nav>
                             </div>
                         )}
                     </aside>
 
-                    <main className={headings.length > 0 ? "col-xl-10 col-lg-9 col-12" : "col-12"}>
+                    <main className="col-xl-10 col-lg-9 col-12">
                         <div className="d-flex justify-content-between align-items-start mb-4">
                             <div>
                                 <nav aria-label="breadcrumb" className="mb-1">
@@ -240,6 +245,7 @@ function CategoryPage() {
                                 </div>
                             )}
                         </section>
+                        <MessageList apiUrl={`/wikis/${wiki?.name}/categories/${category?.name}/messages`} />
                     </main>
                 </div>
             </div>

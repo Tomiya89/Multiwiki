@@ -15,6 +15,7 @@ import {
     FiGlobe
 } from 'react-icons/fi';
 import Locale from '../../../entities/Locale';
+import MessageList from '../../../components/MessageList';
 
 function ArticlePage() {
     const { user } = useAuth();
@@ -60,11 +61,11 @@ function ArticlePage() {
                 <div className="row g-4">
 
                     <aside className="col-xl-2 col-lg-3 d-none d-lg-block">
-                        {headings.length > 0 && (
-                            <div className="sticky-top" style={{ top: '100px', zIndex: 10 }}>
-                                <h6 className="text-uppercase fw-bold text-muted mb-3" style={{ fontSize: '0.65rem', letterSpacing: '0.5px' }}>
-                                    {getTranslate('toc')}
-                                </h6>
+                        <div className="sticky-top" style={{ top: '100px', zIndex: 10 }}>
+                            <h6 className="text-uppercase fw-bold text-muted mb-3" style={{ fontSize: '0.65rem', letterSpacing: '0.5px' }}>
+                                {getTranslate('toc')}
+                            </h6>
+                            {headings.length > 0 && (
                                 <nav className="nav flex-column border-start border-2 border-light">
                                     {headings.map((h) => (
                                         <a key={h.id} href={`#${h.id}`} onClick={(e) => handleNavClick(e, h.id)}
@@ -73,11 +74,15 @@ function ArticlePage() {
                                         </a>
                                     ))}
                                 </nav>
-                            </div>
-                        )}
+                            )}
+                            <a href="#comments-section" onClick={(e) => handleNavClick(e, 'comments-section')}
+                                className="nav-link py-1 toc-link fw-bold text-primary mt-2">
+                                {getTranslate('comments')}
+                            </a>
+                        </div>
                     </aside>
 
-                    <main className={headings.length > 0 ? "col-xl-10 col-lg-9 col-12" : "col-12"}>
+                    <main className="col-xl-10 col-lg-9 col-12">
 
                         <div className="d-flex justify-content-between align-items-start mb-4">
                             <div>
@@ -155,8 +160,10 @@ function ArticlePage() {
                                 )}
                             </div>
                         </div>
+                        <MessageList apiUrl={`/wikis/${wiki?.name}/categories/${categoryName}/articles/${articleName}/messages`} />
                     </main>
                 </div>
+                
             </div>
         </div>
     );

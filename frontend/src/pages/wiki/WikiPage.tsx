@@ -7,6 +7,7 @@ import type Locale from "../../entities/Locale";
 import { useAuth } from '../../contexts/AuthContext';
 import WikiInfobox from '../../components/Infobox';
 import parseHeadings from "../../functions/parseHeadings";
+import MessageList from '../../components/MessageList';
 
 function WikiPage() {
     const { user } = useAuth();
@@ -38,12 +39,13 @@ function WikiPage() {
             <div className="container-fluid px-md-5" style={{ maxWidth: '1600px' }}>
                 <div className="row g-4">
                     <aside className="col-xl-2 col-lg-2 d-none d-lg-block">
-                        {headings.length > 0 && (
+                       
                             <div className="sticky-top" style={{ top: '100px', zIndex: 10 }}>
                                 <div className="toc-wrapper">
                                     <h6 className="text-uppercase fw-bold text-muted mb-3" style={{ fontSize: '0.65rem', letterSpacing: '0.5px' }}>
                                         {getTranslate('toc')}
                                     </h6>
+                                {headings.length > 0 && (
                                     <nav className="nav flex-column border-start border-2 border-light">
                                         {headings.map((h) => (
                                             <a
@@ -56,13 +58,17 @@ function WikiPage() {
                                                 {h.text}
                                             </a>
                                         ))}
+                                        <a href="#comments-section" onClick={(e) => handleNavClick(e, 'comments-section')}
+                                            className="nav-link py-1 toc-link fw-bold text-primary mt-2">
+                                            {getTranslate('comments')}
+                                        </a>
                                     </nav>
+                                )}
                                 </div>
                             </div>
-                        )}
                     </aside>
 
-                    <main className={headings.length > 0 ? "col-xl-10 col-lg-10 col-12" : "col-12"}>
+                    <main className="col-xl-10 col-lg-9 col-12">
                         <div className="d-flex justify-content-between align-items-center mb-4">
                             <h1 className="display-5 fw-bold m-0 text-dark">{translation?.title || wiki.name}</h1>
                             {isAuthor && (
@@ -119,6 +125,7 @@ function WikiPage() {
                                 )}
                             </div>
                         </div>
+                        <MessageList apiUrl={`/wikis/${wiki?.name}/messages`} />
                     </main>
                 </div>
             </div>
