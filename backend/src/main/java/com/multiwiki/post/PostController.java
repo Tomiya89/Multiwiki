@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.multiwiki.like.EnumLikeAttachmentType;
+import com.multiwiki.like.LikeService;
 import com.multiwiki.post.requests.CreatePostRequest;
 import com.multiwiki.post.requests.UpdatePostRequest;
 import com.multiwiki.post.responses.PostErrorResponse;
@@ -39,6 +41,9 @@ public class PostController {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private LikeService likeService;
+
     @GetMapping
     public ResponseEntity<Page<PostDTO>> getAllPosts(
             @PathVariable String wikiName,
@@ -57,19 +62,26 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDTO> getPost(@PathVariable String wikiName, @PathVariable int postId) {
+    public ResponseEntity<PostDTO> getPost(@AuthenticationPrincipal User requester, @PathVariable String wikiName, @PathVariable int postId) {
         Optional<Wiki> opt_wiki = this.wikiService.findByName(wikiName);
         if(opt_wiki.isEmpty())
             return ResponseEntity.notFound().build();
 
         Wiki wiki = opt_wiki.get();
 
-        Optional<Post> post = this.postService.findPostByIdAndWikiID(postId, wiki.getId());
+        Optional<Post> opt_post = this.postService.findPostByIdAndWikiID(postId, wiki.getId());
         
-        if(post.isEmpty() || post.get().isDeleted())
+        if(opt_post.isEmpty() || opt_post.get().isDeleted())
             return ResponseEntity.notFound().build();
 
-        return ResponseEntity.ok().body(new PostDTO(post.get()));
+        Post post = opt_post.get();
+
+        if(requester != null){
+            if(likeService.isLiked(EnumLikeAttachmentType.MESSAGE, post.getId(), requester.getId()))
+                post.setLiked(true);
+        }
+
+        return ResponseEntity.ok().body(new PostDTO(post));
     }
     
     @PostMapping

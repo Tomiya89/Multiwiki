@@ -17,6 +17,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -61,6 +62,9 @@ public class Message {
     @Column(name = "status", nullable = false)
     private String status;
 
+    @Transient
+    private boolean isLiked;
+
     @PrePersist
     protected void onCreate() {
         if (this.createdAt == null) 
@@ -69,6 +73,7 @@ public class Message {
         //     this.updatedAt = LocalDateTime.now();
         this.likesCount = 0;
         this.status = EnumMessageStatus.ACTIVE.name();
+        this.isLiked = false;
     }
 
     public void setStatus(EnumMessageStatus status){

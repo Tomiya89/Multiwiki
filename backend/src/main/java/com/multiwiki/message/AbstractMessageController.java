@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.multiwiki.like.EnumLikeAttachmentType;
+import com.multiwiki.like.LikeService;
 import com.multiwiki.message.requests.CreateMessageRequest;
 import com.multiwiki.message.requests.MessageFilterRequest;
 import com.multiwiki.user.User;
@@ -24,12 +26,15 @@ public abstract class AbstractMessageController <Attributes> {
 
     private final EnumAttachableTypeMessage attachableType;
 
+    @Autowired
+    private LikeService likeService;
+
     public AbstractMessageController(EnumAttachableTypeMessage attachableType){
         this.attachableType = attachableType;
     }
 
     @GetMapping
-    public ResponseEntity<Page<Message>> getMessages(@ModelAttribute Attributes attributes, @Valid @ModelAttribute MessageFilterRequest request) {
+    public ResponseEntity<Page<Message>> getMessages(@AuthenticationPrincipal User requester, @ModelAttribute Attributes attributes, @Valid @ModelAttribute MessageFilterRequest request) {
         int attachableId;
         try {
             attachableId = this.getAttachableId(attributes);
@@ -48,6 +53,10 @@ public abstract class AbstractMessageController <Attributes> {
         }
 
         messages.forEach(message -> {
+            if(requester != null){
+                if(likeService.isLiked(EnumLikeAttachmentType.MESSAGE, message.getId(), requester.getId()))
+                   message.setLiked(true);
+            }
             if(message.getStatus().equals(EnumMessageStatus.DELETED.name())) {
                 message.setBody("");
             }

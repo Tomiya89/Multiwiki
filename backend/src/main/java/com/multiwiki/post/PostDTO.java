@@ -14,6 +14,7 @@ public class PostDTO {
     private UserDTO user;
     private int likesCount;
     private LocalDateTime createdAt;
+    private boolean isLiked;
 
     public PostDTO(Post post){
         this.id = post.getId();
@@ -22,5 +23,6 @@ public class PostDTO {
         this.user = new UserDTO(post.getUser());
         this.likesCount = post.getLikesCount();
         this.createdAt = post.getCreatedAt();
+        this.isLiked = post.getIsLiked();
     }
 }

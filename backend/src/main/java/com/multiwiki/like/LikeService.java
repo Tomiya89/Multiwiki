@@ -32,4 +32,8 @@ public class LikeService {
     public void delete(Like request) throws Exception {
         this.likeRepository.delete(request);
     }
+
+    public boolean isLiked(EnumLikeAttachmentType attachmentType, int attachmentId, int userId){
+        return this.likeRepository.existsByAttachmentTypeAndAttachmentIdAndUserId(attachmentType.name(), attachmentId, userId);
+    }
 }

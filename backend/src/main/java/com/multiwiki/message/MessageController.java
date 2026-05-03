@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.multiwiki.like.EnumLikeAttachmentType;
+import com.multiwiki.like.LikeService;
 import com.multiwiki.message.attributes.MessageMessageAttributes;
 import com.multiwiki.message.requests.CreateMessageRequest;
 import com.multiwiki.message.requests.MessageFilterRequest;
@@ -31,6 +33,9 @@ import jakarta.validation.Valid;
 public class MessageController {
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private LikeService likeService;
 
     @DeleteMapping("/{messageId}")
     public ResponseEntity<?> deleteMessage(@AuthenticationPrincipal User requester, @PathVariable int messageId){
@@ -52,7 +57,7 @@ public class MessageController {
     }
 
     @GetMapping("/{messageId}/messages")
-    public ResponseEntity<Page<Message>> getMessages(@ModelAttribute MessageMessageAttributes attributes, @Valid @ModelAttribute MessageFilterRequest request) {
+    public ResponseEntity<Page<Message>> getMessages(@AuthenticationPrincipal User requester, @ModelAttribute MessageMessageAttributes attributes, @Valid @ModelAttribute MessageFilterRequest request) {
         Optional<Message> opt_message = this.messageService.findById(attributes.getMessageId());
         if(opt_message.isEmpty()) return ResponseEntity.notFound().build();
         
@@ -78,6 +83,10 @@ public class MessageController {
         }
 
         page.forEach(message -> {
+            if(requester != null){
+                if(likeService.isLiked(EnumLikeAttachmentType.MESSAGE, message.getId(), requester.getId()))
+                   message.setLiked(true);
+            }
             if(message.getStatus().equals(EnumMessageStatus.DELETED.name())) {
                 message.setBody("");
             }
