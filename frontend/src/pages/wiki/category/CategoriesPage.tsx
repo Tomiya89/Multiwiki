@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ApiClient from '../../../services/ApiClient';
 import Category from '../../../entities/Category';
+import CategoryWithTranslation from '../../../entities/Category';
 import CategoryItem from '../../../components/CategoryItem';
 import { useLocale } from '../../../contexts/LocaleContext';
 import { useWiki } from '../../../contexts/WikiContext';
@@ -10,19 +11,13 @@ import { FiPlus } from 'react-icons/fi';
 
 import "./CategoriesPage.css";
 
-interface EnrichedCategory extends Category {
-    translation?: {
-        title: string;
-    } | null;
-}
-
 const CategoriesPage = () => {
     const navigate = useNavigate();
     const { wiki, staff } = useWiki();
     const { user } = useAuth();
     const { currentLocale, getTranslate } = useLocale();
 
-    const [categories, setCategories] = useState<EnrichedCategory[]>([]);
+    const [categories, setCategories] = useState<CategoryWithTranslation[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -33,20 +28,15 @@ const CategoriesPage = () => {
             try {
                 const baseCategories = await ApiClient.get<Category[]>(`/wikis/${wiki.name}/categories`);
 
-                const enriched = await Promise.all(
-                    baseCategories.map(async (cat) => {
-                        try {
-                            const transData = await ApiClient.get<{ title: string }>(
-                                `/wikis/${wiki.name}/categories/${cat.name}/translations/${currentLocale}`
-                            );
-                            return { ...cat, translation: transData };
-                        } catch (err) {
-                            return { ...cat, translation: null };
-                        }
-                    })
-                );
+                const categories = baseCategories.map((cat) => {
+                    for(const transl of cat?.translations){
+                        if (transl?.locale === currentLocale)
+                            return { ...cat, translation: transl };
+                    }
+                    return { ...cat, translation: null};
+                });
 
-                setCategories(enriched);
+                setCategories(categories);
             } catch (err) {
                 console.error("Error loading categories or translations:", err);
             } finally {
@@ -58,13 +48,13 @@ const CategoriesPage = () => {
     }, [wiki?.name, currentLocale]);
 
     const grouped = useMemo(() => {
-        const getTitle = (cat: EnrichedCategory) => cat.translation?.title || cat.name;
+        const getTitle = (cat: CategoryWithTranslation) => cat.translation?.title || cat.name;
 
         const sorted = [...categories].sort((a, b) =>
             getTitle(a).localeCompare(getTitle(b), currentLocale)
         );
 
-        const groups: Record<string, EnrichedCategory[]> = {};
+        const groups: Record<string, CategoryWithTranslation[]> = {};
 
         sorted.forEach(cat => {
             const title = getTitle(cat);

@@ -1,36 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import ApiClient from '../services/ApiClient';
-import type Category from '../entities/Category';
-import type Translation from "../entities/Translation";
+import type CategoryWithTranslation from '../entities/Category';
 import { FiChevronRight } from 'react-icons/fi';
 
 import "./CategoryItem.css";
 
 interface Props {
-    category: Category;
+    category: CategoryWithTranslation;
     wikiName: string;
     currentLocale: string;
 }
 
 const CategoryItem = ({ category, wikiName, currentLocale }: Props) => {
-    const [displayName, setDisplayName] = useState(category.name);
-
-    useEffect(() => {
-        const fetchTranslation = async () => {
-            try {
-                const trans = await ApiClient.get<Translation>(
-                    `/wikis/${wikiName}/categories/${category.name}/translations/${currentLocale}`
-                );
-                if (trans?.title) {
-                    setDisplayName(trans?.title);
-                }
-            } catch {
-                setDisplayName(category.name);
-            }
-        };
-        fetchTranslation();
-    }, [category.name, wikiName, currentLocale]);
+    const [displayName] = useState(category?.translation?.title || category.name);
 
     return (
         <Link

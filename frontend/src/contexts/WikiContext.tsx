@@ -4,6 +4,7 @@ import ApiClient from '../services/ApiClient';
 import { useLocale } from './LocaleContext';
 import type Wiki from "../entities/Wiki";
 import type Translation from "../entities/Translation";
+import type TranslationDTO from "../entities/Translation";
 import type StaffDTO from "../entities/Staff";
 import type Image from "../entities/Image";
 import { useAuth } from './AuthContext';
@@ -12,7 +13,7 @@ interface WikiContextType {
     wiki: Wiki | null;
     translation: Translation | null;
     staff: StaffDTO | null;
-    availableTranslations: Translation[];
+    availableTranslations: TranslationDTO[];
     loading: boolean;
     error: string | null;
     background: Image | null;
@@ -36,7 +37,7 @@ export const WikiProvider = ({ children }: { children: ReactNode }) => {
     const [wiki, setWiki] = useState<Wiki | null>(null);
     const [staff, setStaff] = useState<StaffDTO | null>(null);
     const [translation, setTranslation] = useState<Translation | null>(null);
-    const [availableTranslations, setAvailableTranslations] = useState<Translation[]>([]);
+    const [availableTranslations, setAvailableTranslations] = useState<TranslationDTO[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -66,6 +67,9 @@ export const WikiProvider = ({ children }: { children: ReactNode }) => {
                 if (!isSameWiki) {
                     currentWiki = await ApiClient.get<Wiki>(`/wikis/${nameInUrl}`);
                     setWiki(currentWiki);
+                    setBackground(currentWiki?.background);
+                    setCard(currentWiki?.card);
+                    setAvailableTranslations(currentWiki?.translations);
 
                     try {
                         const staffData = await ApiClient.get<StaffDTO>(`/wikis/${nameInUrl}/staffs/me`);
@@ -73,26 +77,8 @@ export const WikiProvider = ({ children }: { children: ReactNode }) => {
                     } catch {
                         setStaff(null);
                     }
-                    try {
-                        const allTrans = await ApiClient.get<Translation[]>(`/wikis/${nameInUrl}/translations`);
-                        setAvailableTranslations(allTrans);
-                    } catch {
-                        setAvailableTranslations([]);
-                    }
-
-                    try{
-                        const background = await ApiClient.get<Image>(`/wikis/${nameInUrl}/background`);
-                        setBackground(background);
-                    }catch{
-                        setBackground(null);
-                    }
-                    try {
-                        const card = await ApiClient.get<Image>(`/wikis/${nameInUrl}/card`);
-                        setCard(card);
-                    } catch {
-                        setCard(null);
-                    }
                 }
+                
                 try {
                     const transData = await ApiClient.get<Translation>(`/wikis/${nameInUrl}/translations/${currentLocale}`);
                     setTranslation(transData);

@@ -9,3 +9,9 @@ export default interface Translation{
     createdAt: string
     updatedAt: string
 }
+
+export default interface TranslationDTO {
+    id: number
+    locale: string
+    title: string
+}

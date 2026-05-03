@@ -1,6 +1,9 @@
 package com.multiwiki.category;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.multiwiki.translation.TranslationDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +15,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,6 +46,9 @@ public class Category {
     @Column(name = "updatedAt")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
+
+    @Transient
+    private List<TranslationDTO> translations;
 
     @PrePersist
     protected void onCreate() {

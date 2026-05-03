@@ -7,6 +7,8 @@ import ApiClient from '../../services/ApiClient';
 import { FiTrash2, FiUserPlus, FiUser, FiChevronLeft, FiChevronRight, FiAlertCircle } from 'react-icons/fi';
 import type StaffDTO from '../../entities/Staff';
 import PageResponse from '../../entities/PageResponse';
+import User from '../../entities/User';
+import { getFullImageURL } from '../../entities/Image';
 
 function WikiStaffsPage() {
     const { wikiName } = useParams();
@@ -91,10 +93,17 @@ function WikiStaffsPage() {
             await ApiClient.delete(`/wikis/${wikiName}/staffs/${userId}`);
             fetchStaff();
         } catch (err: any) {
+            if (err?.message === 'NOT_FOUND'){
+                fetchStaff();
+                return;
+            }
             const errorKey = err?.message || 'STAFF_DELETE_ERROR';
             setError(getTranslate(errorKey));
         }
     };
+
+    const getAvatarUrl = (user: User) => user?.avatar ? getFullImageURL(user?.avatar) : null;
+    const getInitial = (user: User) => user?.username?.charAt(0).toUpperCase() || "?";
 
     if (!isOwner) {
         return (
@@ -174,7 +183,23 @@ function WikiStaffsPage() {
                                     <tr key={s.id}>
                                         <td className="ps-4">
                                             <div className="d-flex align-items-center gap-2">
-                                                <div className="bg-light rounded-circle p-2"><FiUser /></div>
+                                                {getAvatarUrl(s.user) ? (
+                                                    <img
+                                                        src={getAvatarUrl(s.user)!}
+                                                        alt="Avatar"
+                                                        className="rounded-circle object-fit-cover"
+                                                        style={{ width: '32px', height: '32px' }}
+                                                    />
+                                                ) : (
+                                                    <div
+                                                        className="bg-light rounded-circle d-flex align-items-center justify-content-center text-secondary border"
+                                                        style={{ width: '32px', height: '32px' }}
+                                                    >
+                                                        <span className="fw-bold small" style={{ fontSize: '0.8rem' }}>
+                                                            {getInitial(s.user)}
+                                                        </span>
+                                                    </div>
+                                                )}
                                                 <span className="fw-medium">{s.user?.username}</span>
                                             </div>
                                         </td>

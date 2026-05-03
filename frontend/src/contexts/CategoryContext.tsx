@@ -4,11 +4,12 @@ import ApiClient from '../services/ApiClient';
 import { useLocale } from './LocaleContext';
 import type Category from "../entities/Category";
 import type Translation from "../entities/Translation";
+import type TranslationDTO from "../entities/Translation";
 
 interface CategoryContextType {
     category: Category | null;
     translation: Translation | null;
-    availableTranslations: Translation[];
+    availableTranslations: TranslationDTO[];
     loading: boolean;
     error: string | null;
     saveTranslation: (data: { title: string; description: string }) => Promise<void>;
@@ -22,7 +23,7 @@ export const CategoryProvider = ({ children }: { children: ReactNode }) => {
 
     const [category, setCategory] = useState<Category | null>(null);
     const [translation, setTranslation] = useState<Translation | null>(null);
-    const [availableTranslations, setAvailableTranslations] = useState<Translation[]>([]);
+    const [availableTranslations, setAvailableTranslations] = useState<TranslationDTO[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -53,13 +54,7 @@ export const CategoryProvider = ({ children }: { children: ReactNode }) => {
                 if (!isSameCategory) {
                     const catData = await ApiClient.get<Category>(`/wikis/${wikiName}/categories/${categoryName}`);
                     setCategory(catData);
-
-                    try {
-                        const allTrans = await ApiClient.get<Translation[]>(`/wikis/${wikiName}/categories/${categoryName}/translations`);
-                        setAvailableTranslations(allTrans);
-                    } catch {
-                        setAvailableTranslations([]);
-                    }
+                    setAvailableTranslations(catData?.translations);
                 }
 
                 try {

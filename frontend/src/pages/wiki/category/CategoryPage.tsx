@@ -7,6 +7,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import ApiClient from '../../../services/ApiClient';
 import WikiInfobox from '../../../components/Infobox';
 import parseHeadings from "../../../functions/parseHeadings";
+import ArticleWithTranslation from '../../../entities/Article';
 import Article from '../../../entities/Article';
 import Locale from "../../../entities/Locale";
 
@@ -19,12 +20,6 @@ import {
     FiChevronRight,
     FiPlus
 } from 'react-icons/fi';
-
-interface ArticleWithTranslation extends Article {
-    translation?: {
-        title: string;
-    } | null;
-}
 
 function CategoryPage() {
     const { user } = useAuth();
@@ -46,20 +41,15 @@ function CategoryPage() {
                     `/wikis/${wiki?.name}/categories/${category?.name}/articles`
                 );
 
-                const enriched = await Promise.all(
-                    baseArticles.map(async (art) => {
-                        try {
-                            const transData = await ApiClient.get<{ title: string }>(
-                                `/wikis/${wiki?.name}/categories/${category?.name}/articles/${art.name}/translations/${currentLocale}`
-                            );
-                            return { ...art, translation: transData };
-                        } catch (err) {
-                            return { ...art, translation: null };
-                        }
-                    })
-                );
+                const articles = baseArticles.map((art) => {
+                    for (const transl of art?.translations) {
+                        if (transl?.locale === currentLocale)
+                            return { ...art, translation: transl };
+                    }
+                    return { ...art, translation: null };
+                });
 
-                setArticles(enriched);
+                setArticles(articles);
             } catch (err) {
                 console.error("Error loading articles or translations:", err);
             } finally {

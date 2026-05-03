@@ -2,6 +2,7 @@ package com.multiwiki.article;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -24,6 +25,9 @@ import com.multiwiki.article.responses.ArticleErrorResponse;
 import com.multiwiki.category.Category;
 import com.multiwiki.category.CategoryService;
 import com.multiwiki.staff.StaffService;
+import com.multiwiki.translation.EnumTranslatableType;
+import com.multiwiki.translation.TranslationDTO;
+import com.multiwiki.translation.TranslationService;
 import com.multiwiki.user.EnumUserRole;
 import com.multiwiki.user.User;
 import com.multiwiki.wiki.Wiki;
@@ -46,6 +50,9 @@ public class ArticleController {
     @Autowired
     private StaffService staffService;
 
+    @Autowired
+    private TranslationService translationService;
+
     @GetMapping("/{name}")
     public ResponseEntity<Article> getArticle(@PathVariable("wikiName") String wikiName, @PathVariable("categoryName") String categoryName, @PathVariable("name") String name) {
         Optional<Wiki> opt_wiki = this.wikiService.findByName(wikiName);
@@ -58,11 +65,16 @@ public class ArticleController {
             return ResponseEntity.notFound().build();
         Category category = opt_category.get();
 
-        Optional<Article> article = this.articleService.findByNameAndWikiIdAndCategoryId(name, wiki.getId(), category.getId());
-        if(article.isEmpty())
+        Optional<Article> opt_article = this.articleService.findByNameAndWikiIdAndCategoryId(name, wiki.getId(), category.getId());
+        if(opt_article.isEmpty())
             return ResponseEntity.notFound().build();
 
-        return ResponseEntity.ok().body(article.get());
+        Article article = opt_article.get();
+
+        List<TranslationDTO> translations = translationService.findByTranslatableTypeAndTranslatableId(EnumTranslatableType.ARTICLE, article.getId()).stream().map(t -> new TranslationDTO(t)).collect(Collectors.toList());
+        article.setTranslations(translations);
+
+        return ResponseEntity.ok().body(article);
     }
     
     @GetMapping
@@ -78,6 +90,11 @@ public class ArticleController {
         Category category = opt_category.get();
 
         List<Article> articles = this.articleService.findByWikiIdAndCategoryId(wiki.getId(),category.getId());
+        for (Article article : articles) {
+            List<TranslationDTO> translations = translationService.findByTranslatableTypeAndTranslatableId(EnumTranslatableType.ARTICLE, article.getId()).stream().map(t -> new TranslationDTO(t)).collect(Collectors.toList());
+            article.setTranslations(translations);
+        }
+        
         return ResponseEntity.ok().body(articles);
     }
     

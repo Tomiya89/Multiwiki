@@ -32,7 +32,8 @@ export function AuthProvider({children}: {children: ReactNode}){
                 const restored = await ApiClient.restoreSession();
                 if(restored){
                     const resotedUser: User = await ApiClient.me();
-                    setNewUser(resotedUser);
+                    setUser(resotedUser);
+                    setAvatar(resotedUser?.avatar);
                 }
             }catch(error){
                 console.error('Session restoration failed:', error)
@@ -44,21 +45,6 @@ export function AuthProvider({children}: {children: ReactNode}){
         initAuth();
     }, []);
 
-    const setNewUser = async (newUser: User | null) => {
-        setUser(newUser);
-        if (newUser && newUser.avatarId != 0) {
-            try {
-                const newAvatar: Image = await ApiClient.get<Image>("/users/" + newUser.id.toString() + "/avatar");
-                if (newAvatar)
-                    setAvatar(newAvatar);
-            } catch (error) {
-                setAvatar(null);
-            }
-        }else{
-            setAvatar(null);
-        }
-    };
-
     const login = async(email: string, password: string) => {
         setIsLoading(true);
         try{
@@ -68,7 +54,8 @@ export function AuthProvider({children}: {children: ReactNode}){
             });
             ApiClient.setAccessToken(response.token);
             const loggedUser: User = await ApiClient.me();
-            setNewUser(loggedUser);
+            setUser(loggedUser);
+            setAvatar(loggedUser?.avatar);
         }catch(error){
             console.error('Login error:', error)
             throw error
@@ -85,7 +72,8 @@ export function AuthProvider({children}: {children: ReactNode}){
             console.error('Logout error:', error)
         }finally{
             ApiClient.setAccessToken(null);
-            setNewUser(null);
+            setUser(null);
+            setAvatar(null);
             setIsLoading(false);
         }
     };
@@ -115,8 +103,8 @@ export function AuthProvider({children}: {children: ReactNode}){
             });
             ApiClient.setAccessToken(response.token);
             const loggedUser: User = await ApiClient.me();
-            setNewUser(loggedUser);
-
+            setUser(loggedUser);
+            setAvatar(loggedUser?.avatar);
         } catch (error) {
             console.error('Registration confirmation error:', error);
             throw error;
@@ -162,6 +150,7 @@ export function AuthProvider({children}: {children: ReactNode}){
 
     const updateUser = (updatedUser: User) => {
         setUser(updatedUser);
+        setAvatar(updatedUser?.avatar);
     };
 
     const value: AuthContextType = {

@@ -117,19 +117,11 @@ public class ImageService {
         return allowedExtensions.contains(extension.toLowerCase());
     }
 
-    public void deleteImage(int id){
-        Optional<Image> opt_image = this.imageRepository.findById(id);
-
-        if(opt_image.isEmpty())
-            return;
-
-        Image image = opt_image.get();
-
+    public void deleteImage(Image image){
         try {
             Path file = Paths.get(this.uploadPath).resolve(image.getFilename());
             Files.deleteIfExists(file);
         } catch (Exception e) { }
-
-        this.imageRepository.deleteById(id);
+        this.imageRepository.delete(image);
     }
 }

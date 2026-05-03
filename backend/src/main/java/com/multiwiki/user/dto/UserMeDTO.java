@@ -2,6 +2,7 @@ package com.multiwiki.user.dto;
 
 import java.time.LocalDateTime;
 
+import com.multiwiki.Image.Image;
 import com.multiwiki.user.User;
 
 import lombok.Data;
@@ -11,7 +12,7 @@ public class UserMeDTO {
     private int id;
     private String username;
     private String email;
-    private int avatarId;
+    private Image avatar;
     private String role;
     private LocalDateTime createdAt;
 
@@ -19,7 +20,7 @@ public class UserMeDTO {
         this.id = user.getId();
         this.username = user.getUsername();
         this.email = user.getEmail();
-        this.avatarId = user.getAvatarId();
+        this.avatar = user.getAvatar();
         this.role = user.getRole();
         this.createdAt = user.getCreatedAt();
     }

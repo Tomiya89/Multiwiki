@@ -4,11 +4,13 @@ import ApiClient from '../services/ApiClient';
 import { useLocale } from './LocaleContext';
 import type Article from "../entities/Article";
 import type Translation from "../entities/Translation";
+import type TranslationDTO from "../entities/Translation";
+
 
 interface ArticleContextType {
     article: Article | null;
     translation: Translation | null;
-    availableTranslations: Translation[];
+    availableTranslations: TranslationDTO[];
     loading: boolean;
     error: string | null;
     saveTranslation: (data: { title: string; body: string; infoboxData?: string }) => Promise<void>;
@@ -22,7 +24,7 @@ export const ArticleProvider = ({ children }: { children: ReactNode }) => {
 
     const [article, setArticle] = useState<Article | null>(null);
     const [translation, setTranslation] = useState<Translation | null>(null);
-    const [availableTranslations, setAvailableTranslations] = useState<Translation[]>([]);
+    const [availableTranslations, setAvailableTranslations] = useState<TranslationDTO[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -52,15 +54,7 @@ export const ArticleProvider = ({ children }: { children: ReactNode }) => {
                         `/wikis/${wikiName}/categories/${categoryName}/articles/${articleName}`
                     );
                     setArticle(artData);
-
-                    try {
-                        const allTrans = await ApiClient.get<Translation[]>(
-                            `/wikis/${wikiName}/categories/${categoryName}/articles/${articleName}/translations`
-                        );
-                        setAvailableTranslations(allTrans);
-                    } catch {
-                        setAvailableTranslations([]);
-                    }
+                    setAvailableTranslations(artData?.transaltions);
                 }
 
                 try {

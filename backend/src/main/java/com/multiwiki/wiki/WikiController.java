@@ -1,7 +1,9 @@
 package com.multiwiki.wiki;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,9 @@ import com.multiwiki.Image.Image;
 import com.multiwiki.Image.ImageService;
 import com.multiwiki.common.responses.Response;
 import com.multiwiki.staff.StaffService;
+import com.multiwiki.translation.EnumTranslatableType;
+import com.multiwiki.translation.TranslationDTO;
+import com.multiwiki.translation.TranslationService;
 import com.multiwiki.user.EnumUserRole;
 import com.multiwiki.user.User;
 import com.multiwiki.wiki.requests.CreateWikiRequest;
@@ -42,12 +47,21 @@ public class WikiController {
     @Autowired
     private StaffService staffService;
 
+    @Autowired
+    private TranslationService translationService;
+
     @GetMapping("/{name}")
     public ResponseEntity<Wiki> getByID(@PathVariable String name) {
-        Optional<Wiki> wiki = this.wikiService.findByName(name);
-        if(wiki.isEmpty())
+        Optional<Wiki> opt_wiki = this.wikiService.findByName(name);
+        if(opt_wiki.isEmpty())
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(wiki.get());
+
+        Wiki wiki = opt_wiki.get();
+
+        List<TranslationDTO> translations = translationService.findByTranslatableTypeAndTranslatableId(EnumTranslatableType.WIKI, wiki.getId()).stream().map(t -> new TranslationDTO(t)).collect(Collectors.toList());
+        wiki.setTranslations(translations);
+
+        return ResponseEntity.ok(wiki);
     }
 
     @PostMapping
@@ -59,28 +73,6 @@ public class WikiController {
         }
     }       
 
-    @GetMapping("/{name}/background")
-    public ResponseEntity<Image> getBackgroundImage(@PathVariable String name) {
-        Optional<Wiki> wiki = this.wikiService.findByName(name);
-        if(wiki.isEmpty())
-            return ResponseEntity.notFound().build();
-        Optional<Image> image = this.imageService.findById(wiki.get().getBackgroundImageId());
-        if(image.isEmpty())
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok().body(image.get());
-    }
-    
-    @GetMapping("/{name}/card")
-    public ResponseEntity<Image> getCardImage(@PathVariable String name) {
-        Optional<Wiki> wiki = this.wikiService.findByName(name);
-        if(wiki.isEmpty())
-            return ResponseEntity.notFound().build();
-        Optional<Image> image = this.imageService.findById(wiki.get().getCardImageId());
-        if(image.isEmpty())
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok().body(image.get());
-    }
-
     @DeleteMapping("/{name}/background")
     public ResponseEntity<?> deleteBackgroundImage(@AuthenticationPrincipal User requester, @PathVariable String name) {
         Optional<Wiki> wiki = this.wikiService.findByName(name);
@@ -90,11 +82,7 @@ public class WikiController {
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.get().getUserId() && !this.staffService.isOwner(wiki.get().getId(), requester.getId()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new WikiErrorResponse(EnumWikiResponse.WIKI_NO_RIGHTS));
 
-        Optional<Image> image = this.imageService.findById(wiki.get().getBackgroundImageId());
-        if(image.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        this.imageService.deleteImage(image.get().getId());
+        this.imageService.deleteImage(wiki.get().getBackground());
 
         return ResponseEntity.ok(new Response());
     }
@@ -108,11 +96,7 @@ public class WikiController {
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.get().getUserId() && !this.staffService.isOwner(wiki.get().getId(), requester.getId()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new WikiErrorResponse(EnumWikiResponse.WIKI_NO_RIGHTS));
 
-        Optional<Image> image = this.imageService.findById(wiki.get().getCardImageId());
-        if(image.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        this.imageService.deleteImage(image.get().getId());
+        this.imageService.deleteImage(wiki.get().getCard());
 
         return ResponseEntity.ok(new Response());
     }
@@ -128,12 +112,11 @@ public class WikiController {
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isOwner(wiki.getId(), requester.getId()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new WikiErrorResponse(EnumWikiResponse.WIKI_NO_RIGHTS));
 
-        Optional<Image> old_image = this.imageService.findById(wiki.getBackgroundImageId());
-        if(!old_image.isEmpty())
-            this.imageService.deleteImage(old_image.get().getId());
+        if(wiki.getBackground() != null)
+            this.imageService.deleteImage(wiki.getBackground());
         try {
             Image image = this.imageService.createBackground(requester, file);
-            wiki.setBackgroundImageId(image.getId());
+            wiki.setBackground(image);
             this.wikiService.update(wiki);
             return ResponseEntity.ok().body(image);
         } catch (IOException e) {
@@ -152,12 +135,11 @@ public class WikiController {
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != wiki.getUserId() && !this.staffService.isOwner(wiki.getId(), requester.getId()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new WikiErrorResponse(EnumWikiResponse.WIKI_NO_RIGHTS));
 
-        Optional<Image> old_image = this.imageService.findById(wiki.getCardImageId());
-        if(!old_image.isEmpty())
-            this.imageService.deleteImage(old_image.get().getId());
+        if(wiki.getCard() != null)
+            this.imageService.deleteImage(wiki.getCard());
         try {
             Image image = this.imageService.createCard(requester, file);
-            wiki.setCardImageId(image.getId());
+            wiki.setCard(image);
             this.wikiService.update(wiki);
             return ResponseEntity.ok().body(image);
         } catch (IOException e) {

@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,34 +31,6 @@ public class AvatarController {
     @Autowired
     private ImageService imageService;
 
-    //#region Get avatar
-    
-    @GetMapping("/{id}/avatar")
-    public ResponseEntity<?> getAvatarById(@PathVariable int id) {
-        Optional<User> opt_user = this.userService.getById(id);
-        if(opt_user.isEmpty())
-            return ResponseEntity.notFound().build(); 
-        User user = opt_user.get();
-        Optional<Image> image = this.imageService.findById(user.getAvatarId());
-        if(image.isEmpty())
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.status(HttpStatus.OK).body(image.get());
-    }
-    
-    @GetMapping("/username/{username}/avatar")
-    public ResponseEntity<?> getAvatarByUsername(@PathVariable String username) {
-        Optional<User> opt_user = this.userService.getByUsername(username);
-        if(opt_user.isEmpty())
-            return ResponseEntity.notFound().build(); 
-        User user = opt_user.get();
-        Optional<Image> image = this.imageService.findById(user.getAvatarId());
-        if(image.isEmpty())
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.status(HttpStatus.OK).body(image.get());
-    }
-
-    //#endregion
-
     //#region upload avatar
 
     @PostMapping("/{id}/avatar")
@@ -76,9 +47,9 @@ public class AvatarController {
         try{
             Image image = this.imageService.createAvatar(requester, file);
             
-            this.imageService.deleteImage(user.getAvatarId());
+            this.imageService.deleteImage(user.getAvatar());
 
-            user.setAvatarId(image.getId());
+            user.setAvatar(image);
 
             this.userService.updateUser(user);
 
@@ -102,9 +73,9 @@ public class AvatarController {
         try{
             Image image = this.imageService.createAvatar(requester, file);
 
-            this.imageService.deleteImage(user.getAvatarId());
+            this.imageService.deleteImage(user.getAvatar());
             
-            user.setAvatarId(image.getId());
+            user.setAvatar(image);
 
             this.userService.updateUser(user);
 
@@ -130,9 +101,9 @@ public class AvatarController {
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != user.getId())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have the required rights");
 
-        this.imageService.deleteImage(user.getAvatarId());
+        this.imageService.deleteImage(user.getAvatar());
 
-        user.setAvatarId(0);
+        user.setAvatar(null);
         this.userService.updateUser(user);
         
         return ResponseEntity.ok(new Response());
@@ -149,9 +120,9 @@ public class AvatarController {
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != user.getId())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have the required rights");
 
-        this.imageService.deleteImage(user.getAvatarId());
+        this.imageService.deleteImage(user.getAvatar());
 
-        user.setAvatarId(0);
+        user.setAvatar(null);
         this.userService.updateUser(user);
 
         return ResponseEntity.ok(new Response());

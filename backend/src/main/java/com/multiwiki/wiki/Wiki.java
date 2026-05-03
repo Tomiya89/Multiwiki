@@ -1,17 +1,26 @@
 package com.multiwiki.wiki;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.multiwiki.Image.Image;
+import com.multiwiki.translation.TranslationDTO;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,20 +41,24 @@ public class Wiki {
     @Column(name = "userId", nullable = false)
     private int userId;
 
-    @Column(name = "backgroundImageId")
-    private int backgroundImageId;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "backgroundImageId", referencedColumnName = "id")
+    private Image background;
 
-    @Column(name = "cardImageId")
-    private int cardImageId;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "cardImageId", referencedColumnName = "id")
+    private Image card;
 
     @Column(name = "createdAt", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
-    
     @Column(name = "updatedAt")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
+
+    @Transient
+    private List<TranslationDTO> translations;
 
     @PrePersist
     protected void onCreate() {
@@ -53,8 +66,8 @@ public class Wiki {
             this.createdAt = LocalDateTime.now();
         if (this.updatedAt == null) 
             this.updatedAt = LocalDateTime.now();
-        this.backgroundImageId = 0;
-        this.cardImageId = 0;
+        this.background = null;
+        this.card = null;
     }
 
     @PreUpdate

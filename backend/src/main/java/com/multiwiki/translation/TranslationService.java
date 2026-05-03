@@ -25,14 +25,14 @@ public class TranslationService {
     @Autowired
     private StaffService staffService;
 
-    public Optional<Translation> findByTranslatableTypeAndTranslatableIdAndLocale(Enum translatableType, int translatableId, String locale) throws IllegalArgumentException{
+    public Optional<Translation> findByTranslatableTypeAndTranslatableIdAndLocale(EnumTranslatableType translatableType, int translatableId, String locale) throws IllegalArgumentException{
         if(!this.localeRepository.existsByLocale(locale))
             throw new IllegalArgumentException("Такого языка не существует");
 
         return this.translationRepository.findByTranslatableTypeAndTranslatableIdAndLocale(translatableType.name(), translatableId, locale);
     }
 
-    public List<Translation> findByTranslatableTypeAndTranslatableId(Enum translatableType, int translatableId){
+    public List<Translation> findByTranslatableTypeAndTranslatableId(EnumTranslatableType translatableType, int translatableId){
         return this.translationRepository.findByTranslatableTypeAndTranslatableId(translatableType.name(), translatableId);
     }
 

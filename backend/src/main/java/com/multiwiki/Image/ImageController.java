@@ -76,7 +76,7 @@ public class ImageController {
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != image.getUserId())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("У вас не достаточно прав");
 
-        this.imageService.deleteImage(id);
+        this.imageService.deleteImage(image);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -93,7 +93,7 @@ public class ImageController {
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != image.getUserId())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("У вас не достаточно прав");
 
-        this.imageService.deleteImage(image.getId());
+        this.imageService.deleteImage(image);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -110,7 +110,7 @@ public class ImageController {
         if(!requester.getRole().equals(EnumUserRole.ADMIN.name()) && requester.getId() != image.getUserId())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("У вас не достаточно прав");
 
-        this.imageService.deleteImage(image.getId());
+        this.imageService.deleteImage(image);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
