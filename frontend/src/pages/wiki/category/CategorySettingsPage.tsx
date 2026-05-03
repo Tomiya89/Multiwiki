@@ -8,7 +8,7 @@ import ApiClient from '../../../services/ApiClient';
 import { FiLink, FiArrowLeft } from 'react-icons/fi';
 
 function CategorySettingsPage() {
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { wiki, staff, loading: wikiLoading } = useWiki();
     const { category, loading: catLoading } = useCategory();
     const { getTranslate } = useLocale();
@@ -19,13 +19,18 @@ function CategorySettingsPage() {
     const [error, setError] = useState(''); 
 
     useEffect(() => {
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
+
         if (category)
             setNewName(category.name);
-    }, [category]);
+    }, [category, user, isLoading]);
 
     const isAuthor = (staff?.role === 'AUTHOR' || staff?.role === 'OWNER' || (user !== null && wiki !== null && user.id === wiki.userId));
 
-    if (catLoading || wikiLoading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
+    if (catLoading || wikiLoading || isLoading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
 
     if (!isAuthor) {
         return (

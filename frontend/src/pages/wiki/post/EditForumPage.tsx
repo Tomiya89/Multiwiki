@@ -8,7 +8,7 @@ import Post from '../../../entities/Post';
 import { useAuth } from '../../../contexts/AuthContext';
 
 function EditForumPage() {
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { wikiName, postId } = useParams();
     const { getTranslate } = useLocale();
     const navigate = useNavigate();
@@ -25,6 +25,11 @@ function EditForumPage() {
     const canEdit = isAuthor || isAdmin;
 
     useEffect(() => {
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
+
         const fetchPost = async () => {
             try {
                 const data = await ApiClient.get<Post>(`/wikis/${wikiName}/posts/${postId}`);
@@ -38,7 +43,7 @@ function EditForumPage() {
             }
         };
         fetchPost();
-    }, [wikiName, postId]);
+    }, [wikiName, postId, isLoading, user]);
 
     const handleUpdate = async () => {
         if (!title.trim() || !content.trim()) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useWiki } from '../../contexts/WikiContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLocale } from '../../contexts/LocaleContext';
@@ -12,7 +12,7 @@ import { getFullImageURL } from '../../entities/Image';
 
 function WikiStaffsPage() {
     const { wikiName } = useParams();
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { wiki } = useWiki();
     const { getTranslate } = useLocale();
 
@@ -29,10 +29,17 @@ function WikiStaffsPage() {
     const isOwner = user && wiki && user.id === wiki.userId;
     const pageSize = 10;
 
+    const navigate = useNavigate();
+
     const clearError = () => setError(null);
 
     const fetchStaff = useCallback(async () => {
-        if (!wikiName || !user) return;
+        if (!wikiName) return;
+
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
 
         setLoading(true);
         clearError();
@@ -48,7 +55,7 @@ function WikiStaffsPage() {
         } finally {
             setLoading(false);
         }
-    }, [wikiName, page, query, user, getTranslate]);
+    }, [wikiName, isLoading, page, query, user, getTranslate]);
 
     useEffect(() => {
         setPage(0);

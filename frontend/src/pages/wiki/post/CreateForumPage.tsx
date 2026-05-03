@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWiki } from '../../../contexts/WikiContext';
 import { useLocale } from '../../../contexts/LocaleContext';
 import Editor from '../../../components/Editor';
 import { FiSave, FiArrowLeft } from 'react-icons/fi';
 import ApiClient from '../../../services/ApiClient';
+import { useAuth } from '../../../contexts/AuthContext';
 
 function CreateForumPage() {
+    const { user, isLoading } = useAuth();
     const { wiki } = useWiki();
     const { getTranslate } = useLocale();
     const navigate = useNavigate();
@@ -36,6 +38,13 @@ function CreateForumPage() {
         }
     };
 
+    useEffect(() => {
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
+    }, [isLoading, user]);
+
     return (
         <div className="container py-4" style={{ minHeight: '100vh', background: '#f8f9fa' }}>
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -56,7 +65,7 @@ function CreateForumPage() {
                     ) : (
                         <FiSave className="me-2" />
                     )}
-                    {getTranslate('create')}
+                    {getTranslate('createPost')}
                 </button>
             </div>
 

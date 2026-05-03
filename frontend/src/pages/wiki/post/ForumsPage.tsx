@@ -11,7 +11,7 @@ import ApiClient from '../../../services/ApiClient';
 
 const ForumsPage = () => {
     const { wiki, loading: wikiLoading } = useWiki();
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { getTranslate } = useLocale();
     const navigate = useNavigate();
 
@@ -22,12 +22,14 @@ const ForumsPage = () => {
     const [sortField, setSortField] = useState('createdAt');
     const [sortDir, setSortDir] = useState('desc');
 
-    const canCreate = (wiki && (wiki.userId === user?.id)) || false;
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchPosts = async () => {
         setLoading(true);
         try {
-            const query = `?page=${page}&size=10&sort=${sortField},${sortDir}`;
+            const titleParam = searchQuery.trim() ? `&title=${encodeURIComponent(searchQuery)}` : '';
+            const query = `?page=${page}&size=10&sort=${sortField},${sortDir}${titleParam}`;
+
             const response = await ApiClient.get<PageResponse<Post>>(`/wikis/${wiki?.name}/posts${query}`);
             setPageData(response);
         } catch (error) {
@@ -37,7 +39,13 @@ const ForumsPage = () => {
         }
     };
 
+    const handleSearch = () => {
+        setPage(0);
+        fetchPosts();
+    };
+
     useEffect(() => {
+        if (isLoading) return;
         if (wiki) fetchPosts();
     }, [page, sortField, sortDir, wiki]);
 
@@ -60,13 +68,27 @@ const ForumsPage = () => {
 
     return (
         <div className="container-fluid py-3">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="fw-bold">{getTranslate('forums')}</h2>
-                {canCreate && (
-                    <Link to={`/wikis/${wiki?.name}/forums/create`} className="btn btn-primary d-flex align-items-center gap-2">
-                        <FiPlus /> {getTranslate('createPost')}
-                    </Link>
-                )}
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <h2 className="fw-bold m-0">{getTranslate('forums')}</h2>
+                <Link to={`/wikis/${wiki?.name}/forums/create`} className="btn btn-primary d-flex align-items-center gap-2">
+                    <FiPlus /> {getTranslate('createPost')}
+                </Link>
+            </div>
+            <div className="mb-4">
+                <div className="input-group shadow-sm">
+                    <input
+                        type="text"
+                        className="form-control form-control-lg border-end-0"
+                        placeholder={getTranslate("name")}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                        style={{ border: '1px solid #dee2e6' }}
+                    />
+                    <button className="btn btn-primary px-4" onClick={handleSearch}>
+                        {getTranslate("search")}
+                    </button>
+                </div>
             </div>
 
             <div className="table-responsive bg-white rounded shadow-sm">

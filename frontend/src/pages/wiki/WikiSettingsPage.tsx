@@ -10,7 +10,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import './WikiSettingsPage.css';
 
 function WikiSettingsPage() {
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { wiki, staff, background, card, uploadBackground, deleteBackground, uploadCard, deleteCard, loading } = useWiki();
     const { getTranslate } = useLocale();
     const navigate = useNavigate();
@@ -20,9 +20,14 @@ function WikiSettingsPage() {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
+
         if (wiki) 
             setNewName(wiki.name);
-    }, [wiki]);
+    }, [wiki, isLoading]);
 
     if (loading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
     if (staff?.role !== 'OWNER' && !(user !== null && wiki !== null && user.id === wiki.userId)) {

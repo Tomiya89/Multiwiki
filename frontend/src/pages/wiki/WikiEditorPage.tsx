@@ -10,7 +10,7 @@ import "./WikiEditorPage.css";
 import { useAuth } from '../../contexts/AuthContext';
 
 function WikiEditorPage() {
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { wiki, translation, staff, saveTranslation, loading } = useWiki();
     const { getTranslate } = useLocale();
     const navigate = useNavigate();
@@ -33,6 +33,11 @@ function WikiEditorPage() {
     }
 
     useEffect(() => {
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
+
         if (translation) {
             setTitle(translation.title || '');
             setContent(translation.body || '');
@@ -47,7 +52,7 @@ function WikiEditorPage() {
                 console.error("Failed to parse infoboxData", e);
             }
         }
-    }, [translation]);
+    }, [translation, isLoading]);
 
     const handleSave = async () => {
         const fullData = {

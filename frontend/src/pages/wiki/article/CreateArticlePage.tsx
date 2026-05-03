@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocale } from '../../../contexts/LocaleContext';
 import { FiPlusCircle, FiFileText, FiArrowLeft } from 'react-icons/fi';
@@ -9,7 +9,7 @@ import { useCategory } from '../../../contexts/CategoryContext';
 import { useAuth } from '../../../contexts/AuthContext';
 
 function CreateArticlePage() {
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const navigate = useNavigate();
     const { wiki, staff, loading: wikiLoading} = useWiki();
     const { category, loading: catLoading} = useCategory();
@@ -42,9 +42,16 @@ function CreateArticlePage() {
         }
     };
 
+    useEffect(() => {
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
+    }, [isLoading, user]);
+
     const isAuthor = (staff?.role === 'AUTHOR' || staff?.role === 'OWNER' || (user !== null && wiki !== null && user.id === wiki.userId));
 
-    if (wikiLoading || catLoading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
+    if (wikiLoading || catLoading || isLoading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
 
     if (!isAuthor) {
         return (

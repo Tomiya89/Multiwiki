@@ -77,7 +77,7 @@ public class PostController {
         Post post = opt_post.get();
 
         if(requester != null){
-            if(likeService.isLiked(EnumLikeAttachmentType.MESSAGE, post.getId(), requester.getId()))
+            if(likeService.isLiked(EnumLikeAttachmentType.POST, post.getId(), requester.getId()))
                 post.setLiked(true);
         }
 

@@ -12,7 +12,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import "./ArticleEditorPage.css";
 
 function ArticleEditorPage() {
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { wiki, staff, loading: wikiLoading} = useWiki();
     const { category, loading: catLoading} = useCategory();
     const { article, translation, saveTranslation, loading } = useArticle();
@@ -29,6 +29,11 @@ function ArticleEditorPage() {
     });
 
     useEffect(() => {
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
+        
         if (translation) {
             setTitle(translation.title || '');
             setContent(translation.body || '');
@@ -44,7 +49,7 @@ function ArticleEditorPage() {
                 console.error("Failed to parse article infoboxData", e);
             }
         }
-    }, [translation]);
+    }, [translation, user, isLoading]);
 
     const handleSave = async () => {
         const payload = {

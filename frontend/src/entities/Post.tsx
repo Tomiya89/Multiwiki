@@ -10,4 +10,5 @@ export default interface Post{
     createdAt: string
     updatedAt: string
     status: string
+    liked: boolean
 }

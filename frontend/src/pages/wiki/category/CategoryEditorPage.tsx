@@ -11,7 +11,7 @@ import { useWiki } from '../../../contexts/WikiContext';
 import "./CategoryEditorPage.css";
 
 function CategoryEditorPage() {
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { category, translation, saveTranslation, loading: catLoading } = useCategory();
     const { wiki, staff, loading: wikiLoading} = useWiki();
     const { getTranslate } = useLocale();
@@ -27,6 +27,11 @@ function CategoryEditorPage() {
     });
 
     useEffect(() => {
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
+        
         if (translation) {
             setTitle(translation.title || '');
             setContent(translation.body || '');
@@ -42,7 +47,7 @@ function CategoryEditorPage() {
                 console.error("Failed to parse category infoboxData", e);
             }
         }
-    }, [translation]);
+    }, [translation, user, isLoading]);
 
     const handleSave = async () => {
         if(!wiki || !category) return;

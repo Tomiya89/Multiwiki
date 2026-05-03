@@ -9,7 +9,7 @@ import { FiLink, FiArrowLeft } from 'react-icons/fi';
 import { useCategory } from '../../../contexts/CategoryContext';
 
 function ArticleSettingsPage() {
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { wiki, staff, loading: wikiLoading } = useWiki();
     const { category, loading: catLoadinng } = useCategory();
     const { article, loading: artLoading} = useArticle();
@@ -22,13 +22,18 @@ function ArticleSettingsPage() {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
+
         if (article)
             setNewName(article.name);
     }, [article]);
 
     const isAuthor = (staff?.role === 'AUTHOR' || staff?.role === 'OWNER' || (user !== null && wiki !== null && user.id === wiki.userId));
 
-    if (wikiLoading || catLoadinng || artLoading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
+    if (wikiLoading || catLoadinng || artLoading || isLoading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
 
     if (!isAuthor) {
         return (

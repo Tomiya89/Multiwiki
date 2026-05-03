@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { FiTrash2, FiCornerDownLeft } from 'react-icons/fi';
+import { FiTrash2, FiCornerDownLeft, FiThumbsUp } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
 import ApiClient from '../services/ApiClient';
 import Message from '../entities/Message';
@@ -24,6 +24,9 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isNew, onDelete, onR
     const [loadingReplies, setLoadingReplies] = useState(false);
     const [isReplying, setIsReplying] = useState(false);
     const [replyBody, setReplyBody] = useState('');
+
+    const [likesCount, setLikesCount] = useState(0);
+    const [like, setLike] = useState(false);
 
     const observer = useRef<IntersectionObserver | null>(null);
     const canDelete = user && (user.id === message.user.id || user.role === 'ADMIN') && message.status !== 'DELETED';
@@ -58,6 +61,8 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isNew, onDelete, onR
     };
 
     useEffect(() => {
+        setLikesCount(message?.likesCount);
+        setLike(message?.liked);
         fetchReplies(true);
     }, [message.id]);
 
@@ -85,6 +90,21 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isNew, onDelete, onR
             setReplyBody('');
             setIsReplying(false);
         } catch (e) { console.error(e); }
+    };
+
+    const handleLike = async () => {
+        try{
+            if (like) {
+                setLike(false);
+                setLikesCount(likesCount - 1);
+                await ApiClient.delete(`/messages/${message?.id}/like`);
+            }
+            else {
+                setLike(true);
+                setLikesCount(likesCount + 1);
+                await ApiClient.get(`/messages/${message?.id}/like`);
+            }
+        }catch{ }
     };
 
     return (
@@ -118,6 +138,13 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isNew, onDelete, onR
                     
 
                     <div className="mt-2 d-flex gap-3">
+                        <button
+                            onClick={handleLike}
+                            className={`btn btn-sm d-flex align-items-center gap-1 ${like ? 'text-primary' : 'text-muted'}`}
+                            style={{ border: 'none', background: 'transparent' }}>
+                            <FiThumbsUp size={16} fill={like ? 'currentColor' : 'none'} />
+                            <small>{likesCount}</small>
+                        </button>
                         <button className="btn btn-sm btn-link text-decoration-none p-0" onClick={() => setIsReplying(!isReplying)}>
                             <FiCornerDownLeft /> {isReplying ? getTranslate('cancelBtn') : getTranslate('answerBtn')}
                         </button>

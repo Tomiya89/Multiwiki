@@ -11,11 +11,13 @@ import MessageList from '../../../components/MessageList';
 const ForumPage = () => {
     const { wikiName, postId } = useParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { getTranslate } = useLocale();
 
     const [post, setPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
+    const [likesCount, setLikesCount] = useState(0);
+    const [like, setLike] = useState(false);
 
     const isAuthor = user && post && post.user.id === user.id;
     const isAdmin = user?.role === 'ADMIN';
@@ -25,6 +27,8 @@ const ForumPage = () => {
         try {
             setLoading(true);
             const response = await ApiClient.get<Post>(`/wikis/${wikiName}/posts/${postId}`);
+            setLikesCount(response?.likesCount);
+            setLike(response?.liked);
             setPost(response);
         } catch (error) {
             console.error("Error fetching post:", error);
@@ -34,11 +38,23 @@ const ForumPage = () => {
     };
 
     useEffect(() => {
+        if(isLoading) return;
         fetchPost();
-    }, [postId]);
+    }, [postId, isLoading]);
 
     const handleLike = async () => {
-        // Обработка лайков
+        try{
+            if (like) {
+                setLike(false);
+                setLikesCount(likesCount - 1);
+                await ApiClient.delete(`/wikis/${wikiName}/posts/${postId}/like`);
+            }
+            else {
+                setLike(true);
+                setLikesCount(likesCount + 1);
+                await ApiClient.get(`/wikis/${wikiName}/posts/${postId}/like`);
+            }
+        }catch{ }
     };
 
     if (loading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
@@ -52,8 +68,14 @@ const ForumPage = () => {
                 </button>
 
                 <div className="d-flex gap-2">
-                    <button onClick={handleLike} className="btn btn-light rounded-pill px-3 shadow-sm border">
-                        <FiThumbsUp className="me-1 text-primary" /> {post.likesCount}
+                    <button
+                        onClick={handleLike}
+                        className={`btn ${like ? 'btn-primary' : 'btn-light'} rounded-pill px-3 shadow-sm border`}
+                    >
+                        <FiThumbsUp className={`me-1 ${like ? 'text-white' : 'text-primary'}`} />
+                        <span className={like ? 'text-white' : ''}>
+                            {likesCount}
+                        </span>
                     </button>
 
                     {canEdit && (

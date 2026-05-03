@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocale } from '../../../contexts/LocaleContext';
 import { FiPlusCircle, FiLink, FiArrowLeft } from 'react-icons/fi';
@@ -9,7 +9,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 
 function CreateCategoryPage() {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { wiki, staff, loading: wikiLoading } = useWiki();
     const { getTranslate } = useLocale();
 
@@ -33,9 +33,16 @@ function CreateCategoryPage() {
         }
     };
 
+    useEffect(() => {
+        if (isLoading) return;
+
+        if (user == null)
+            navigate('/login');
+    }, [isLoading, user]);
+
     const isAuthor = (staff?.role === 'AUTHOR' || staff?.role === 'OWNER' || (user !== null && wiki !== null && user.id === wiki.userId));
 
-    if (wikiLoading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
+    if (wikiLoading || isLoading) return <div className="text-center p-5"><div className="spinner-border text-primary"></div></div>;
 
     if (!isAuthor) {
         return (

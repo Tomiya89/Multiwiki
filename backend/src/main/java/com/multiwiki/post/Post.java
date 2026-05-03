@@ -93,6 +93,10 @@ public class Post {
             this.likesCount = 0;
     }
 
+    public boolean getIsLiked(){
+        return this.isLiked;
+    }
+
     @JsonIgnore
     public boolean isDeleted(){
         return this.status.equals(EnumPostStatus.DELETED.name());

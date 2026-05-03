@@ -40,7 +40,7 @@ function WikiLayout() {
                     WebkitBackdropFilter: 'blur(10px)'
                 }}
             >
-                <div className="sticky-top" style={{ top: '90px' }}>
+                {wiki ? <div className="sticky-top" style={{ top: '90px' }}>
                     <h6 className="text-uppercase text-muted small fw-bold mb-3 px-2">
                         {getTranslate('navigation')}
                     </h6>
@@ -76,7 +76,8 @@ function WikiLayout() {
                             </Link>
                         </>
                     )}
-                </div>
+                </div> : <div></div>}
+                
             </aside>
             <main className="flex-grow-1 p-2 p-md-4" style={{ zIndex: 1, minWidth: 0 }}>
                 <div
@@ -90,7 +91,8 @@ function WikiLayout() {
                         padding: 'clamp(1rem, 3vw, 2.5rem)'
                     }}
                 >
-                    <Outlet />
+                    {wiki ? <Outlet /> : <div className="text-center p-5">{getTranslate('wikiNotFound')}</div>}
+                    
                 </div>
             </main>
         </div>

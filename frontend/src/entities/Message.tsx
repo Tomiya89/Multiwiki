@@ -12,4 +12,5 @@ export default interface Message{
     createdAt: string
     status: string
     new: boolean | null
+    liked: boolean
 }
