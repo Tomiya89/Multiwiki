@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useWiki } from '../../../contexts/WikiContext';
 import { useLocale } from '../../../contexts/LocaleContext';
 import Editor from '../../../components/Editor';
 import { FiSave, FiArrowLeft } from 'react-icons/fi';
 import ApiClient from '../../../services/ApiClient';
 
-function CreatePostPage() {
+function CreateForumPage() {
     const { wiki } = useWiki();
     const { getTranslate } = useLocale();
     const navigate = useNavigate();
@@ -82,4 +82,4 @@ function CreatePostPage() {
     );
 }
 
-export default CreatePostPage;
+export default CreateForumPage;

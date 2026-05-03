@@ -13,6 +13,7 @@ export const translations: Record<string, Record<string, string>> = {
         usernameLabel: "Логин",
         passwordLabel: "Пароль",
         confirmPasswordLabel: "Повторите пароль",
+        postNotFound: "Такого поста не существует",
         enterCodeLabel: "Шестизначный код",
         loginBtn: "Войти",
         registerBtn: "Создать аккаунт",

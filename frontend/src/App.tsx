@@ -25,7 +25,9 @@ import ArticleEditorPage from './pages/wiki/article/ArticleEditorPage';
 import ArticleSettingsPage from './pages/wiki/article/ArticleSettingsPage';
 import WikiStaffsPage from './pages/wiki/WikiStaffsPage';
 import ForumsPage from './pages/wiki/post/ForumsPage';
-import CreatePostPage from './pages/wiki/post/CreateForumPage';
+import CreateForumPage from './pages/wiki/post/CreateForumPage';
+import ForumPage from './pages/wiki/post/ForumPage';
+import EditForumPage from './pages/wiki/post/EditForumPage';
 
 function App() {
   return (
@@ -52,7 +54,11 @@ function App() {
                     {/* Post */}
                     <Route path='forums'>
                       <Route index element={<ForumsPage />} />
-                      <Route path='create' element={<CreatePostPage />} />
+                      <Route path='create' element={<CreateForumPage />} />
+                      <Route path=':postId'>
+                        <Route index element={<ForumPage />} />
+                        <Route path='edit' element={<EditForumPage />} />
+                      </Route>
                     </Route>
 
                     {/* Category */}
