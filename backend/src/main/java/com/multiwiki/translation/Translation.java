@@ -26,6 +26,9 @@ public class Translation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "wikiId", nullable = false)
+    private int wikiId;
+
     @Column(name = "translatableType", nullable = false, unique = true)
     private String translatableType;
 

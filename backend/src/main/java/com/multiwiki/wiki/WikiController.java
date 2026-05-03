@@ -26,11 +26,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.multiwiki.Image.Image;
 import com.multiwiki.Image.ImageService;
+import com.multiwiki.article.Article;
+import com.multiwiki.article.ArticleService;
+import com.multiwiki.category.Category;
+import com.multiwiki.category.CategoryService;
 import com.multiwiki.common.responses.Response;
 import com.multiwiki.staff.StaffService;
 import com.multiwiki.translation.EnumTranslatableType;
+import com.multiwiki.translation.Translation;
 import com.multiwiki.translation.TranslationDTO;
-import com.multiwiki.translation.TranslationRepository;
+import com.multiwiki.translation.TranslationSearchDTO;
 import com.multiwiki.translation.TranslationService;
 import com.multiwiki.user.EnumUserRole;
 import com.multiwiki.user.User;
@@ -56,7 +61,10 @@ public class WikiController {
     private TranslationService translationService;
 
     @Autowired
-    private TranslationRepository translationRepository;
+    private CategoryService categoryService;
+
+    @Autowired
+    private ArticleService articleService;
 
     @GetMapping("/{name}")
     public ResponseEntity<Wiki> getByID(@PathVariable String name) {
@@ -80,6 +88,38 @@ public class WikiController {
         Page<Wiki> wikis = this.wikiService.searchWikis(title, locale, pageable);
         
         return ResponseEntity.ok(wikis);
+    }
+
+    @GetMapping("/{name}/search")
+    public ResponseEntity<Page<TranslationSearchDTO>> searchInWiki(
+            @PathVariable String name,
+            @RequestParam(required = false, defaultValue = "") String title,
+            @PageableDefault(size = 10, sort = "title", direction = Sort.Direction.ASC) Pageable pageable) {
+
+        Optional<Wiki> opt_wiki = this.wikiService.findByName(name);
+        if(opt_wiki.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        Wiki wiki = opt_wiki.get();
+                
+        Page<Translation> translations = this.translationService.findByWikiIdAndTitle(wiki.getId(), title, pageable);
+        
+        Page<TranslationSearchDTO> transl = translations.map(translation -> {
+            String url = "/wikis/" + name;
+            if(translation.getTranslatableType().equals(EnumTranslatableType.CATEGORY.name())){
+                Optional<Category> opt_cat = categoryService.findById(translation.getTranslatableId());
+                url += "/categories/" + opt_cat.get().getName();
+            }else if (translation.getTranslatableType().equals(EnumTranslatableType.ARTICLE.name())) {
+                Optional<Article> opt_art = articleService.findById(translation.getTranslatableId());
+                Optional<Category> opt_cat = categoryService.findById(opt_art.get().getCategoryId());
+                url += "/categories/" + opt_cat.get().getName();
+                url += "/articles/" + opt_art.get().getName();
+            }
+
+            return new TranslationSearchDTO(translation, url);
+        });
+
+        return ResponseEntity.ok(transl);
     }
 
     @PostMapping

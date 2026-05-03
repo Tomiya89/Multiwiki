@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +56,7 @@ public class TranslationService {
         translation.setLocale(request.getLocale());
         translation.setTitle(request.getTitle());
         translation.setBody(request.getBody());
+        translation.setWikiId(request.getWiki().getId());
         translation.setInfoboxData(request.getInfoboxData());
 
         return this.translationRepository.save(translation);
@@ -61,5 +64,9 @@ public class TranslationService {
 
     public Translation update(Translation entity) {
         return this.translationRepository.save(entity);
+    }
+
+    public Page<Translation> findByWikiIdAndTitle(int wikiId, String title, Pageable pageable) {
+        return this.translationRepository.findByWikiIdAndTitleContainingIgnoreCase(wikiId, title, pageable);
     }
 }

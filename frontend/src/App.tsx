@@ -28,6 +28,7 @@ import ForumsPage from './pages/wiki/post/ForumsPage';
 import CreateForumPage from './pages/wiki/post/CreateForumPage';
 import ForumPage from './pages/wiki/post/ForumPage';
 import EditForumPage from './pages/wiki/post/EditForumPage';
+import SearchPage from './pages/wiki/SearchPage';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
                   <Route path='wikis/:wikiName' element={<WikiLayout />}>
                     <Route index element={<WikiPage />} />
                     <Route path='settings' element={<WikiSettingsPage/>}/>
+                    <Route path='search' element={<SearchPage />} />
                     <Route path='edit' element={<WikiEditorPage/>} />
                     <Route path='staffs' element={<WikiStaffsPage />} />
 

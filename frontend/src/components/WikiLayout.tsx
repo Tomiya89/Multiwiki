@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { useWiki } from '../contexts/WikiContext';
 import { useLocale } from '../contexts/LocaleContext';
-import { FiMessageSquare, FiGrid, FiHome, FiSettings } from 'react-icons/fi';
+import { FiMessageSquare, FiGrid, FiHome, FiSettings, FiSearch } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
 import { getFullImageURL } from '../entities/Image';
 
@@ -58,6 +58,11 @@ function WikiLayout() {
                         <li className="nav-item">
                             <Link to={`/wikis/${wiki?.name}/categories`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
                                 <FiGrid className="text-primary" /> {getTranslate('categories')}
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to={`/wikis/${wiki?.name}/search`} className="nav-link text-dark d-flex align-items-center gap-2 rounded p-2 hover-effect">
+                                <FiSearch className="text-primary" /> {getTranslate('search')}
                             </Link>
                         </li>
                     </ul>

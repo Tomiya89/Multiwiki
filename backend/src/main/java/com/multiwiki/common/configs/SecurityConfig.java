@@ -179,7 +179,10 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.GET,"/api/messages/{messageId}/messages").permitAll()
 
+
                 .requestMatchers(HttpMethod.GET,"/api/wikis").permitAll()
+
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/search").permitAll()
 
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/uploads/**").permitAll()

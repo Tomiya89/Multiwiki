@@ -123,6 +123,8 @@ export const translations: Record<string, Record<string, string>> = {
         listIsEmpty: "Список пуст",
         wikiNotFound: "Вики не найдена",
         author: "Автор",
+        insertName: "Введите название...",
+        searchWiki: "Поиск по вики:",
         wiki: "Вики",
         owner: "Владелец",
         add: "Добавить",

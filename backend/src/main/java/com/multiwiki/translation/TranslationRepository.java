@@ -25,4 +25,6 @@ public interface TranslationRepository extends JpaRepository<Translation, Intege
             @Param("locale") String locale, 
             Pageable pageable
     );
+
+    public Page<Translation> findByWikiIdAndTitleContainingIgnoreCase(int wikiId, String title, Pageable pageable);
 }

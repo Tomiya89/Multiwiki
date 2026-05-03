@@ -49,7 +49,7 @@ public class WikiService{
     public Wiki create(CreateWikiRequest request, User requester) throws IllegalArgumentException {
         String name = this.normalizeWikiName(request.getName());
 
-        if(this.wikiRepository.existsByName(name))
+        if(this.wikiRepository.existsByName(name) || name.trim().toLowerCase().equals("search"))
             throw new RuntimeException("Wiki exists with name");
 
         Wiki wiki = new Wiki();

@@ -24,6 +24,10 @@ public class ArticleService {
     @Autowired
     private StaffService staffService;
 
+    public Optional<Article> findById(int id){
+        return this.articleRepository.findById(id);
+    }
+
     public Optional<Article> findByNameAndWikiIdAndCategoryId(String name, int wikiId, int categoryId){
         String normalizedName = this.normalizeArticleName(name);
         return this.articleRepository.findByNameAndWikiIdAndCategoryId(normalizedName, wikiId, categoryId);
