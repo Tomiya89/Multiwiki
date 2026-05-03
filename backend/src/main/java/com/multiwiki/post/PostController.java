@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.multiwiki.post.requests.CreatePostRequest;
@@ -39,8 +40,9 @@ public class PostController {
     private PostService postService;
 
     @GetMapping
-    public ResponseEntity<Page<Post>> getAllPosts(
+    public ResponseEntity<Page<PostDTO>> getAllPosts(
             @PathVariable String wikiName,
+            @RequestParam(required = false) String title,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
         Optional<Wiki> opt_wiki = this.wikiService.findByName(wikiName);
@@ -49,13 +51,13 @@ public class PostController {
         }
 
         Wiki wiki = opt_wiki.get();
-        Page<Post> posts = this.postService.findAllByWikiId(wiki.getId(), pageable);
+        Page<Post> posts = this.postService.findAllByWikiId(wiki.getId(), title, pageable);
         
-        return ResponseEntity.ok().body(posts);
+        return ResponseEntity.ok().body(posts.map(post -> new PostDTO(post)));
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<Post> getPost(@PathVariable String wikiName, @PathVariable int postId) {
+    public ResponseEntity<PostDTO> getPost(@PathVariable String wikiName, @PathVariable int postId) {
         Optional<Wiki> opt_wiki = this.wikiService.findByName(wikiName);
         if(opt_wiki.isEmpty())
             return ResponseEntity.notFound().build();
@@ -67,7 +69,7 @@ public class PostController {
         if(post.isEmpty() || post.get().isDeleted())
             return ResponseEntity.notFound().build();
 
-        return ResponseEntity.ok().body(post.get());
+        return ResponseEntity.ok().body(new PostDTO(post.get()));
     }
     
     @PostMapping

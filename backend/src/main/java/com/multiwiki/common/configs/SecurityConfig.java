@@ -90,6 +90,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/wikis/{wikiName}/categories").authenticated()
 
                 //Получить пост вики
+                .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/posts").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/posts/{postId}").permitAll()
                 //Получить пост вики
                 .requestMatchers(HttpMethod.GET,"/api/wikis/{wikiName}/posts").permitAll()
