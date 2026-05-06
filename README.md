@@ -4,7 +4,7 @@
 
 **Multiwiki** подойдёт всем, кто хочет создать свою тематическую энциклопедию. Это фанаты игр, фильмов и книг, которым нужен удобный справочник по любимой вселенной. Писатели и ведущие настольных игр смогут структурировать материалы собственных миров. А ещё платформа пригодится студентам, преподавателям и небольшим командам для совместной работы над базами знаний.
 
-
+Сайт: https://tomiya89.github.io/Multiwiki/
 
 # Ключевой функционал
 
@@ -338,3 +338,44 @@
 * GET /wikis/{name}/posts/{id}/messages - получение всех сообщений форума.
 * POST /wikis/{name}/posts/{id}/messages - создание нового сообщения под форумом.
 * DELETE /messages/{id_message} - удаление сообщения.
+
+
+# Инструкция по установке
+
+Для запуска проекта на локальной машине необходимо установить:
+* Java (JDK 17 или 21)
+* Node.js (v18+)
+* MySQL Server (8.4+)
+* Git
+
+## 1. Клонирование репозитория
+
+```bash
+git clone https://github.com/Tomiya89/Multiwiki
+```
+    
+## 2. Настройка Бэкенда
+
+1. Перейдите в папку бэкенда:
+   ```bash
+   cd ./backend
+2. Подготовьте конфигурационный файл. Переименуйте:
+   ```src/main/resources/application.properties.origin``` в ```src/main/resources/application.properties```
+   
+   ```bash
+   mv src/main/resources/application.properties.origin src/main/resources/application.properties
+3. Откройте ```src/main/resources/application.properties``` и заполните все поля (настройки базы данных, JWT-токены, параметры почтового сервера) актуальными данными.
+4. Запустите бэкенд:
+   ```bash
+   ./mvnw spring-boot:run
+
+## 3. Настройка Фронтенда
+1. Откройте новый терминал и перейдите в папку фронтенда:
+    ```bash
+    cd ./frontend
+2. Установите зависимости:
+    ```bash
+    npm install
+3. Запустите проект:
+    ```bash
+    npm run dev
