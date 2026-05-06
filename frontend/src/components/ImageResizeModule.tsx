@@ -1,4 +1,4 @@
-import ReactQuill, { Quill } from 'react-quill-new';
+import { Quill } from 'react-quill-new';
 
 export default class ImageResize {
     quill: any;
@@ -22,12 +22,19 @@ export default class ImageResize {
         window.addEventListener('resize', () => this.reposition());
     }
 
+    private getClientPosition(e: MouseEvent | TouchEvent) {
+        if ('touches' in e) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+    }
+
     handleClick = (evt: MouseEvent) => {
         const target = evt.target as HTMLElement;
         if (target && target.tagName === 'IMG') {
             if (this.img === target) return;
             this.show(target as HTMLImageElement);
-        } else if (!target.classList.contains('resize-handle')) 
+        } else if (!target.classList.contains('resize-handle'))
             this.hide();
     };
 
@@ -47,7 +54,9 @@ export default class ImageResize {
             const handle = document.createElement('div');
             handle.className = `resize-handle handle-${pos}`;
             handle.setAttribute('data-handle', pos);
+
             handle.addEventListener('mousedown', this.startResize);
+            handle.addEventListener('touchstart', this.startResize, { passive: false });
             this.overlay!.appendChild(handle);
         });
 
@@ -55,26 +64,8 @@ export default class ImageResize {
         this.reposition();
     }
 
-    getCoords(elem: HTMLElement) {
-        const box = elem.getBoundingClientRect();
-        const body = document.body;
-        const docEl = document.documentElement;
-
-        const scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
-        const scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
-
-        const clientTop = docEl.clientTop || body.clientTop || 0;
-        const clientLeft = docEl.clientLeft || body.clientLeft || 0;
-
-        const top = box.top + scrollTop - clientTop;
-        const left = box.left + scrollLeft - clientLeft;
-
-        return { top: Math.round(top), left: Math.round(left), width: box.width, height: box.height };
-    }
-
     reposition = () => {
         if (!this.img || !this.overlay) return;
-
         const rect = this.img.getBoundingClientRect();
         const parentRect = this.quill.root.parentNode.getBoundingClientRect();
 
@@ -89,66 +80,52 @@ export default class ImageResize {
         });
     };
 
-    startResize = (e: MouseEvent) => {
+    startResize = (e: MouseEvent | TouchEvent) => {
         e.preventDefault();
-        e.stopPropagation(); 
+        e.stopPropagation();
 
         const handle = e.target as HTMLElement;
         this.currentHandle = handle.getAttribute('data-handle');
-        const coords = this.getCoords(this.img!);
+        const pos = this.getClientPosition(e);
+        const rect = this.img!.getBoundingClientRect();
 
         this.startParams = {
-            x: e.clientX,
-            y: e.clientY,
-            w: coords.width,
-            h: coords.height,
-            top: coords.top,
-            left: coords.left
+            x: pos.x,
+            y: pos.y,
+            w: rect.width,
+            h: rect.height,
+            top: rect.top,
+            left: rect.left
         };
+
         document.body.classList.add(`ql-resizing-${this.currentHandle}`);
 
-        document.addEventListener('mousemove', this.onMouseMove);
-        document.addEventListener('mouseup', this.onMouseUp);
+        document.addEventListener('mousemove', this.onMove);
+        document.addEventListener('touchmove', this.onMove, { passive: false });
+        document.addEventListener('mouseup', this.onEnd);
+        document.addEventListener('touchend', this.onEnd);
     };
 
-    onMouseMove = (e: MouseEvent) => {
+    onMove = (e: MouseEvent | TouchEvent) => {
         if (!this.img || !this.currentHandle) return;
+        e.preventDefault();
 
-        const dx = e.clientX - this.startParams.x;
-        const dy = e.clientY - this.startParams.y;
+        const pos = this.getClientPosition(e);
+        const dx = pos.x - this.startParams.x;
+        const dy = pos.y - this.startParams.y;
 
         let newWidth = this.startParams.w;
         let newHeight = this.startParams.h;
 
         switch (this.currentHandle) {
-            case 'se':
-                newWidth = this.startParams.w + dx;
-                newHeight = this.startParams.h + dy;
-                break;
-            case 'sw':
-                newWidth = this.startParams.w - dx;
-                newHeight = this.startParams.h + dy;
-                break;
-            case 'ne':
-                newWidth = this.startParams.w + dx;
-                newHeight = this.startParams.h - dy;
-                break;
-            case 'nw':
-                newWidth = this.startParams.w - dx;
-                newHeight = this.startParams.h - dy;
-                break;
-            case 'n':
-                newHeight = this.startParams.h - dy;
-                break;
-            case 's':
-                newHeight = this.startParams.h + dy;
-                break;
-            case 'e':
-                newWidth = this.startParams.w + dx;
-                break;
-            case 'w':
-                newWidth = this.startParams.w - dx;
-                break;
+            case 'se': newWidth += dx; newHeight += dy; break;
+            case 'sw': newWidth -= dx; newHeight += dy; break;
+            case 'ne': newWidth += dx; newHeight -= dy; break;
+            case 'nw': newWidth -= dx; newHeight -= dy; break;
+            case 'n': newHeight -= dy; break;
+            case 's': newHeight += dy; break;
+            case 'e': newWidth += dx; break;
+            case 'w': newWidth -= dx; break;
         }
 
         if (newWidth < 20) newWidth = 20;
@@ -162,29 +139,25 @@ export default class ImageResize {
         this.reposition();
     };
 
-    onMouseUp = () => {
+    onEnd = () => {
         if (this.currentHandle) {
             document.body.classList.remove(`ql-resizing-${this.currentHandle}`);
         }
 
         this.currentHandle = null;
-        document.removeEventListener('mousemove', this.onMouseMove);
-        document.removeEventListener('mouseup', this.onMouseUp);
+        document.removeEventListener('mousemove', this.onMove);
+        document.removeEventListener('touchmove', this.onMove);
+        document.removeEventListener('mouseup', this.onEnd);
+        document.removeEventListener('touchend', this.onEnd);
 
         if (this.img) {
-            const width = this.img.style.width;
-            const height = this.img.style.height;
-
             const blot = Quill.find(this.img);
             if (blot) {
                 this.quill.formatText(this.quill.getIndex(blot), 1, {
-                    width: width,
-                    height: height
+                    width: this.img.style.width,
+                    height: this.img.style.height
                 }, 'user');
             }
-            setTimeout(() => {
-                this.quill.update();
-            }, 0);
         }
     };
 

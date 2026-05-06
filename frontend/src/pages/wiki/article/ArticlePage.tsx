@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useArticle } from '../../../contexts/ArticleContext';
 import { useWiki } from '../../../contexts/WikiContext';
@@ -24,6 +24,8 @@ function ArticlePage() {
     const { setLocale, currentLocale, languages, getTranslate } = useLocale();
     const { wikiName, categoryName, articleName } = useParams();
     const navigate = useNavigate();
+
+    const [isTocOpen, setIsTocOpen] = useState(false);
 
     const { processedHtml, headings } = useMemo(() => {
         if (!translation?.body) return { processedHtml: '', headings: [] };
@@ -66,24 +68,45 @@ function ArticlePage() {
                                 {getTranslate('toc')}
                             </h6>
                             {headings.length > 0 && (
-                                <nav className="nav flex-column border-start border-2 border-light">
+                                <nav className="nav flex-column border-start border-2 border-light mb-3">
                                     {headings.map((h) => (
                                         <a key={h.id} href={`#${h.id}`} onClick={(e) => handleNavClick(e, h.id)}
-                                            className={`nav-link py-1 toc-link ${h.level === 'h3' ? 'ms-3 small opacity-75' : 'fw-medium'}`}>
+                                            className={`nav-link py-1 toc-link ${h.level === 'h3' ? 'ms-3 small opacity-75' : 'fw-medium'}`}
+                                            style={{ fontSize: '0.85rem' }}>
                                             {h.text}
                                         </a>
                                     ))}
                                 </nav>
                             )}
                             <a href="#comments-section" onClick={(e) => handleNavClick(e, 'comments-section')}
-                                className="nav-link py-1 toc-link fw-bold text-primary mt-2">
+                                className="nav-link py-1 toc-link fw-bold text-primary">
                                 {getTranslate('comments')}
                             </a>
                         </div>
                     </aside>
 
                     <main className="col-xl-10 col-lg-9 col-12">
-
+                        <div className="d-lg-none mb-4">
+                            <button
+                                className="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
+                                onClick={() => setIsTocOpen(!isTocOpen)}
+                            >
+                                {getTranslate('toc')} <span>{isTocOpen ? '▲' : '▼'}</span>
+                            </button>
+                            {isTocOpen && (
+                                <div className="mt-2 p-2 bg-white border rounded shadow-sm">
+                                    {headings.map((h) => (
+                                        <a key={h.id} href={`#${h.id}`} onClick={(e) => { handleNavClick(e, h.id); setIsTocOpen(false); }} className="d-block py-1 text-decoration-none text-dark" style={{ fontSize: '0.9rem' }}>
+                                            {h.text}
+                                        </a>
+                                    ))}
+                                    <a href="#comments-section" onClick={(e) => handleNavClick(e, 'comments-section')} 
+                                        className="d-block py-1 text-decoration-none text-dark" style={{ fontSize: '0.9rem' }}>
+                                        {getTranslate('comments')}
+                                    </a>
+                                </div>
+                            )}
+                        </div>
                         <div className="d-flex justify-content-between align-items-start mb-4">
                             <div>
                                 <nav aria-label="breadcrumb" className="mb-1">
@@ -106,13 +129,23 @@ function ArticlePage() {
 
                             {isAuthor && (
                                 <div className="d-flex gap-2">
-                                    <button onClick={() => navigate(`/wikis/${wikiName}/categories/${categoryName}/articles/${articleName}/settings`)}
-                                        className="btn btn-outline-secondary rounded-pill px-3 shadow-sm">
+                                    <button
+                                        onClick={() => navigate(`/wikis/${wikiName}/categories/${categoryName}/articles/${articleName}/settings`)}
+                                        className="btn btn-outline-secondary rounded-circle rounded-md-pill px-0 px-md-3 shadow-sm d-flex align-items-center justify-content-center"
+                                        style={{ width: '40px', height: '40px' }}
+                                        title={getTranslate('settings')}
+                                    >
                                         <FiSettings />
+                                        <span className="d-none d-md-inline ms-2">{getTranslate('settings')}</span>
                                     </button>
-                                    <button onClick={() => navigate(`/wikis/${wikiName}/categories/${categoryName}/articles/${articleName}/edit`)}
-                                        className="btn btn-primary rounded-pill px-4 shadow-sm">
-                                        <FiEdit3 className="me-2" /> {getTranslate('edit')}
+                                    <button
+                                        onClick={() => navigate(`/wikis/${wikiName}/categories/${categoryName}/articles/${articleName}/edit`)}
+                                        className="btn btn-primary rounded-circle rounded-md-pill px-0 px-md-4 shadow-sm d-flex align-items-center justify-content-center"
+                                        style={{ width: '40px', height: '40px' }}
+                                        title={getTranslate('edit')}
+                                    >
+                                        <FiEdit3 className="me-md-2" />
+                                        <span className="d-none d-md-inline">{getTranslate('edit')}</span>
                                     </button>
                                 </div>
                             )}

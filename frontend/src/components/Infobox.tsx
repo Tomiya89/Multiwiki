@@ -31,8 +31,8 @@ function Infobox ({ infoboxDataString, title } : WikiInfoboxProps){
     if (!mainImage && fields.length === 0 && sections.length === 0) return null;
 
     return (
-        <aside className="wiki-infobox card border-0 shadow-sm rounded-4 ms-lg-4 mb-4 float-lg-end"
-            style={{ width: '320px', overflow: 'hidden', backgroundColor: '#f8fafc' }}>
+        <aside className="wiki-infobox card border-0 shadow-sm rounded-4 mb-4 float-lg-end ms-lg-4 w-100"
+            style={{ maxWidth: '320px', backgroundColor: '#f8fafc' }}>
 
             <div className="card-header bg-primary text-white text-center py-3 border-0">
                 <h5 className="m-0 fw-bold">{title}</h5>

@@ -77,10 +77,13 @@ const ForumPage = () => {
                             {likesCount}
                         </span>
                     </button>
-
                     {canEdit && (
-                        <Link to={`/wikis/${wikiName}/forums/${postId}/edit`} className="btn btn-outline-primary rounded-pill px-3 shadow-sm">
-                            <FiEdit2 className="me-2" /> {getTranslate('edit')}
+                        <Link
+                            to={`/wikis/${wikiName}/forums/${postId}/edit`}
+                            className="btn btn-outline-primary rounded-pill px-3 shadow-sm"
+                        >
+                            <FiEdit2 className="me-md-2" />
+                            <span className="d-none d-md-inline">{getTranslate('edit')}</span>
                         </Link>
                     )}
                 </div>

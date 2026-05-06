@@ -63,7 +63,7 @@ function ArticleSettingsPage() {
     };
 
     return (
-        <div className="mx-auto py-4" style={{ maxWidth: '800px' }}>
+        <div className="mx-auto py-4 px-3" style={{ maxWidth: '800px' }}>
             <button
                 onClick={() => navigate(`/wikis/${wiki?.name}/categories/${category?.name}/articles/${article?.name}`)}
                 className="btn btn-link text-muted p-0 mb-3 text-decoration-none d-flex align-items-center gap-2"
@@ -88,7 +88,7 @@ function ArticleSettingsPage() {
                         {getTranslate('articleUrlChangeDescription')}
                     </p>
 
-                    <div className="d-flex gap-2">
+                    <div className="d-flex flex-column flex-md-row gap-2">
                         <div className="input-group">
                             <span className="input-group-text bg-light text-muted small">
                                 .../articles/
@@ -102,7 +102,7 @@ function ArticleSettingsPage() {
                             />
                         </div>
                         <button
-                            className="btn btn-primary px-4 shadow-sm"
+                            className="btn btn-primary px-4 shadow-sm w-100 w-md-auto"
                             onClick={handleUpdateName}
                             disabled={saving || !newName || newName === article?.name}
                         >

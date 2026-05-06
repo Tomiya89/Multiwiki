@@ -14,7 +14,6 @@ import Locale from "../../../entities/Locale";
 import {
     FiEdit3,
     FiAlertCircle,
-    FiGlobe,
     FiSettings,
     FiFileText,
     FiChevronRight,
@@ -31,6 +30,8 @@ function CategoryPage() {
 
     const [articles, setArticles] = useState<ArticleWithTranslation[]>([]);
     const [articlesLoading, setArticlesLoading] = useState(true);
+
+    const [isTocOpen, setIsTocOpen] = useState(false);
 
     useEffect(() => {
         if (!wiki || !category) return;
@@ -98,15 +99,15 @@ function CategoryPage() {
 
     return (
         <div className="category-page-wrapper py-4">
-            <div className="container-fluid px-md-5" style={{ maxWidth: '1600px' }}>
+            <div className="container-fluid px-3 px-md-5" style={{ maxWidth: '1600px' }}>
                 <div className="row g-4">
 
-                    <aside className="col-xl-2 col-lg-3 d-none d-lg-block">
-                        {(headings.length > 0 || articles.length > 0) && translation && (
-                            <div className="sticky-top" style={{ top: '100px', zIndex: 10 }}>
-                                <h6 className="text-uppercase fw-bold text-muted mb-3" style={{ fontSize: '0.65rem', letterSpacing: '0.5px' }}>
-                                    {getTranslate('toc')}
-                                </h6>
+                    <aside className="col-xl-2 col-lg-2 d-none d-lg-block">
+                        <div className="sticky-top" style={{ top: '100px', zIndex: 10 }}>
+                            <h6 className="text-uppercase fw-bold text-muted mb-3" style={{ fontSize: '0.65rem', letterSpacing: '0.5px' }}>
+                                {getTranslate('toc')}
+                            </h6>
+                            {(headings.length > 0 || articles.length > 0) && translation && (
                                 <nav className="nav flex-column border-start border-2 border-light">
                                     {headings.map((h) => (
                                         <a key={h.id} href={`#${h.id}`} onClick={(e) => handleNavClick(e, h.id)}
@@ -120,16 +121,45 @@ function CategoryPage() {
                                             {getTranslate('articles')}
                                         </a>
                                     )}
-                                    <a href="#comments-section" onClick={(e) => handleNavClick(e, 'comments-section')}
-                                        className="nav-link py-1 toc-link fw-bold text-primary mt-2">
-                                        {getTranslate('comments')}
-                                    </a>
                                 </nav>
-                            </div>
-                        )}
+                            )}
+                            <nav>
+                                <a href="#comments-section" onClick={(e) => handleNavClick(e, 'comments-section')}
+                                    className="nav-link py-1 toc-link fw-bold text-primary mt-2">
+                                    {getTranslate('comments')}
+                                </a>
+                            </nav>
+                        </div>
                     </aside>
 
                     <main className="col-xl-10 col-lg-9 col-12">
+                        <div className="d-lg-none mb-4">
+                            <button
+                                className="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
+                                onClick={() => setIsTocOpen(!isTocOpen)}
+                            >
+                                {getTranslate('toc')} <span>{isTocOpen ? '▲' : '▼'}</span>
+                            </button>
+                            {isTocOpen && (
+                                <div className="mt-2 p-2 bg-white border rounded shadow-sm">
+                                    {headings.map((h) => (
+                                        <a key={h.id} href={`#${h.id}`} onClick={(e) => { handleNavClick(e, h.id); setIsTocOpen(false); }} className="d-block py-1 text-decoration-none text-dark" style={{ fontSize: '0.9rem' }}>
+                                            {h.text}
+                                        </a>
+                                    ))}
+                                    {articles.length > 0 && (
+                                        <a href="#articles-section" onClick={(e) => handleNavClick(e, 'articles-section')}
+                                            className="d-block py-1 text-decoration-none text-dark" style={{ fontSize: '0.9rem' }}>
+                                            {getTranslate('articles')}
+                                        </a>
+                                    )}
+                                    <a href="#comments-section" onClick={(e) => handleNavClick(e, 'comments-section')}
+                                        className="d-block py-1 text-decoration-none text-dark" style={{ fontSize: '0.9rem' }}>
+                                        {getTranslate('comments')}
+                                    </a>
+                                </div>
+                            )}
+                        </div>
                         <div className="d-flex justify-content-between align-items-start mb-4">
                             <div>
                                 <nav aria-label="breadcrumb" className="mb-1">
@@ -137,7 +167,7 @@ function CategoryPage() {
                                         <li className="breadcrumb-item text-muted">{getTranslate('category')}</li>
                                     </ol>
                                 </nav>
-                                <h1 className="display-5 fw-bold m-0 text-dark tracking-tighter">
+                                <h1 className="fs-2 fs-md-1 fw-bold m-0 text-dark tracking-tighter">
                                     {translation?.title || category.name}
                                 </h1>
                             </div>
@@ -146,25 +176,25 @@ function CategoryPage() {
                                 <div className="d-flex gap-2">
                                     <button
                                         onClick={() => navigate(`/wikis/${wiki?.name}/categories/${category?.name}/articles/create`)}
-                                        className="btn btn-primary rounded-pill px-4 shadow-sm d-flex align-items-center gap-2"
+                                        className="btn btn-primary rounded-pill px-3 px-md-4 shadow-sm d-flex align-items-center gap-2"
                                     >
                                         <FiPlus size={20} />
-                                        <span>{getTranslate('createArticleTitle')}</span>
+                                        <span className="d-none d-md-inline">{getTranslate('createArticleTitle')}</span>
                                     </button>
                                     <button onClick={() => navigate(`/wikis/${wiki?.name}/categories/${category?.name}/settings`)}
                                         className="btn btn-outline-secondary rounded-pill px-3 shadow-sm">
                                         <FiSettings />
                                     </button>
                                     <button onClick={() => navigate(`/wikis/${wiki?.name}/categories/${category?.name}/edit`)}
-                                        className="btn btn-primary rounded-pill px-4 shadow-sm">
-                                        <FiEdit3 className="me-2" /> {getTranslate('edit')}
+                                        className="btn btn-primary rounded-pill px-3 px-md-4 shadow-sm">
+                                        <FiEdit3 className="me-0 me-md-2" /> <span className="d-none d-md-inline">{getTranslate('edit')}</span>
                                     </button>
                                 </div>
                             )}
                         </div>
 
                         <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
-                            <div className="card-body p-4 p-lg-5">
+                            <div className="card-body p-3 p-lg-5">
                                 {translation ? (
                                     <div className="wiki-main-layout">
                                         <WikiInfobox
@@ -178,27 +208,6 @@ function CategoryPage() {
                                     <div className="text-center py-5">
                                         <FiAlertCircle size={48} className="text-warning mb-3" />
                                         <h3 className="fw-bold">{getTranslate('translationNotFound')}</h3>
-                                        <p className="text-muted mb-4">
-                                            {getTranslate('noContentForLang')}{' '}
-                                            <strong>
-                                                {languages.find((lang: Locale) => lang.locale === currentLocale)?.name || currentLocale.toUpperCase()}
-                                            </strong>.
-                                        </p>
-                                        <div className="d-flex flex-wrap justify-content-center gap-2">
-                                            {availableTranslations.length > 0 ? (
-                                                availableTranslations.map(t => (
-                                                    <button
-                                                        key={t.id}
-                                                        className="btn btn-outline-primary btn-sm d-flex align-items-center gap-2"
-                                                        onClick={() => setLocale(t.locale)}
-                                                    >
-                                                        <FiGlobe /> {t.locale.toUpperCase()}: {t.title}
-                                                    </button>
-                                                ))
-                                            ) : (
-                                                <p className="small text-danger">{getTranslate('noAvailableTranslations')}</p>
-                                            )}
-                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -221,7 +230,7 @@ function CategoryPage() {
                             ) : (
                                 <div className="articles-list">
                                     {Object.keys(groupedArticles).map(letter => (
-                                        <div key={letter} className="mb-5">
+                                        <div key={letter} className="mb-4 mb-md-5">
                                             <h2 className="letter-group-title">{letter}</h2>
                                             <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
                                                 {groupedArticles[letter].map(art => (
@@ -230,10 +239,10 @@ function CategoryPage() {
                                                             className="text-decoration-none h-100 d-block">
                                                             <div className="card h-100 border-0 shadow-sm rounded-3 article-card-hover">
                                                                 <div className="card-body d-flex align-items-center justify-content-between py-3">
-                                                                    <span className="fw-semibold text-dark">
+                                                                    <span className="fw-semibold text-dark text-truncate">
                                                                         {art.translation?.title || art.name}
                                                                     </span>
-                                                                    <FiChevronRight className="text-muted" />
+                                                                    <FiChevronRight className="text-muted flex-shrink-0" />
                                                                 </div>
                                                             </div>
                                                         </Link>

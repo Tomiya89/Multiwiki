@@ -98,14 +98,13 @@ function Navbar() {
                     </div>
 
                     {wiki && (
-                        <nav aria-label="breadcrumb" className="breadcrumb-wrapper ms-3 ps-3 border-start">
+                        <nav aria-label="breadcrumb" className="breadcrumb-wrapper ms-3 ps-3 border-start d-none d-lg-flex">
                             <ol className="breadcrumb mb-0 align-items-center">
                                 <li className="breadcrumb-item">
                                     <Link to={`/wikis/${wiki.name}`} className="text-decoration-none">
                                         {wikiTrans?.title || wiki.name}
                                     </Link>
                                 </li>
-
                                 {category && (
                                     <li className="breadcrumb-item">
                                         <Link to={`/wikis/${wiki.name}/categories/${category.name}`} className="text-decoration-none">
@@ -113,7 +112,6 @@ function Navbar() {
                                         </Link>
                                     </li>
                                 )}
-
                                 {article && (
                                     <li className="breadcrumb-item active text-muted" aria-current="page">
                                         {artTrans?.title || article.name}
@@ -190,6 +188,30 @@ function Navbar() {
                         <h4 className="fw-bold text-primary mb-0">Menu</h4>
                         <button className="btn btn-light rounded-circle" onClick={toggleMobileMenu}><FiX size={24} /></button>
                     </div>
+
+                    {wiki && (
+                        <nav aria-label="breadcrumb" className="mb-4">
+                            <ol className="breadcrumb mb-0 align-items-center flex-wrap">
+                                <li className="breadcrumb-item">
+                                    <Link to={`/wikis/${wiki.name}`} className="text-decoration-none">
+                                        {wikiTrans?.title || wiki.name}
+                                    </Link>
+                                </li>
+                                {category && (
+                                    <li className="breadcrumb-item">
+                                        <Link to={`/wikis/${wiki.name}/categories/${category.name}`} className="text-decoration-none">
+                                            {catTrans?.title || category.name}
+                                        </Link>
+                                    </li>
+                                )}
+                                {article && (
+                                    <li className="breadcrumb-item active text-muted">
+                                        {artTrans?.title || article.name}
+                                    </li>
+                                )}
+                            </ol>
+                        </nav>
+                    )}
 
                     <div className="mobile-section mb-4">
                         <h6 className="text-uppercase text-muted small fw-bold mb-3">{getTranslate('selectLang')}</h6>

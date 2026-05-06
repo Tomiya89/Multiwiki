@@ -55,26 +55,26 @@ function CreateCategoryPage() {
     }
 
     return (
-        <div className="py-4 d-flex justify-content-center">
+        <div className="py-4 px-3 d-flex justify-content-center">
             <div style={{ maxWidth: '600px', width: '100%' }}>
 
                 <button
                     onClick={() => navigate(-1)}
-                    className="btn btn-link text-decoration-none text-muted mb-4 p-0 d-flex align-items-center gap-2 hover-opacity"
+                    className="btn btn-link text-decoration-none text-muted mb-3 mb-md-4 p-0 d-flex align-items-center gap-2 hover-opacity"
                 >
                     <FiArrowLeft /> {getTranslate('backBtn')}
                 </button>
 
-                <div className="mb-5 text-center text-md-start">
-                    <h2 className="display-6 fw-bold text-dark mb-2">
+                <div className="mb-4 mb-md-5 text-center text-md-start">
+                    <h2 className="fs-3 fs-md-2 fw-bold text-dark mb-2">
                         {getTranslate('createCategoryTitle')}
                     </h2>
-                    <p className="text-muted">
+                    <p className="text-muted small">
                         {getTranslate('createCategoryDesc')}
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="bg-light p-4 p-md-5 rounded-4 border">
+                <form onSubmit={handleSubmit} className="bg-light p-3 p-md-5 rounded-4 border">
                     <div className="mb-4">
                         <label className="form-label small fw-bold text-uppercase text-muted" style={{ letterSpacing: '1px' }}>
                             {getTranslate('categoryUrlLabel')}
@@ -93,7 +93,7 @@ function CreateCategoryPage() {
                                 autoFocus
                             />
                         </div>
-                        <div className="mt-2 small text-muted px-1">
+                        <div className="mt-2 small text-muted px-1 text-truncate">
                             /wikis/{wiki?.name}/categories/<strong>{name || '...'}</strong>
                         </div>
                     </div>

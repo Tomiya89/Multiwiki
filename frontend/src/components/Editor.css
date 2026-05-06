@@ -97,3 +97,70 @@
 body[class*="ql-resizing"] {
     user-select: none;
 }
+
+@media (max-width: 768px) {
+    .resize-handle {
+        width: 20px;
+        height: 20px;
+        margin-top: -10px;
+        margin-left: -10px;
+    }
+
+    .handle-nw {
+        top: -10px;
+        left: -10px;
+    }
+
+    .handle-n {
+        top: -10px;
+    }
+
+    .handle-ne {
+        top: -10px;
+        right: -10px;
+    }
+
+    .handle-e {
+        right: -10px;
+    }
+
+    .handle-se {
+        bottom: -10px;
+        right: -10px;
+    }
+
+    .handle-s {
+        bottom: -10px;
+    }
+
+    .handle-sw {
+        bottom: -10px;
+        left: -10px;
+    }
+
+    .handle-w {
+        left: -10px;
+    }
+
+    .rich-editor .ql-toolbar.ql-snow {
+        display: flex;
+        flex-wrap: wrap;
+        top: 50px;
+        padding: 5px !important;
+    }
+
+    .ql-toolbar.ql-snow .ql-formats {
+        margin-right: 5px !important;
+        margin-bottom: 5px;
+    }
+}
+
+.ql-image-resizer-overlay,
+.resize-handle {
+    touch-action: none;
+}
+
+.rich-editor .ql-editor {
+    word-wrap: break-word;
+    word-break: break-word;
+}

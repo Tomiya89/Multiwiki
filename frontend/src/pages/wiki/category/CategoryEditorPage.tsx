@@ -80,8 +80,8 @@ function CategoryEditorPage() {
     }
 
     return (
-        <div className="container-fluid py-4" style={{ minHeight: '100vh', background: '#f8f9fa' }}>
-            <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="container-fluid py-4 px-3 px-md-4" style={{ minHeight: '100vh', background: '#f8f9fa' }}>
+            <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
                 <button
                     onClick={() => navigate(-1)}
                     className="btn btn-link text-dark text-decoration-none p-0 d-flex align-items-center gap-2 fw-medium"
@@ -89,22 +89,28 @@ function CategoryEditorPage() {
                     <FiArrowLeft /> {getTranslate('backBtn')}
                 </button>
                 <button
-                    className="btn btn-primary rounded-pill px-4 shadow-sm fw-bold"
+                    className="btn btn-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                    style={{ width: '45px', height: '45px', padding: 0 }}
                     onClick={handleSave}
                     disabled={catLoading}
+                    aria-label={getTranslate('save')}
+                    title={getTranslate('save')}
                 >
-                    {catLoading ? <span className="spinner-border spinner-border-sm me-2" /> : <FiSave className="me-2" />}
-                    {getTranslate('save')}
+                    {catLoading ? (
+                        <span className="spinner-border spinner-border-sm" />
+                    ) : (
+                        <FiSave size={20} />
+                    )}
                 </button>
             </div>
 
             <div className="row g-4">
-                <div className="col-lg-8">
-                    <div className="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div className="col-12 col-lg-8">
+                    <div className="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white">
                         <input
                             className="form-control form-control-lg border-0 bg-transparent fw-bold mb-3 p-0"
-                            style={{ fontSize: '2.5rem', outline: 'none', boxShadow: 'none' }}
-                            placeholder={getTranslate("editNameCategory")} 
+                            style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', outline: 'none', boxShadow: 'none' }}
+                            placeholder={getTranslate("editNameCategory")}
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                         />
@@ -112,7 +118,7 @@ function CategoryEditorPage() {
                     </div>
                 </div>
 
-                <div className="col-lg-4">
+                <div className="col-12 col-lg-4">
                     <InfoboxEditor data={infobox} onChange={setInfobox} />
                 </div>
             </div>

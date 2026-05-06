@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWiki } from '../../contexts/WikiContext';
 import { useLocale } from '../../contexts/LocaleContext';
@@ -14,6 +14,8 @@ function WikiPage() {
     const { wiki, translation, staff, availableTranslations, loading } = useWiki();
     const { setLocale, currentLocale, languages, getTranslate } = useLocale();
     const navigate = useNavigate();
+
+    const [isTocOpen, setIsTocOpen] = useState(false);
 
     const { processedHtml, headings } = useMemo(() => {
         if (!translation?.body) return { processedHtml: '', headings: [] };
@@ -36,15 +38,15 @@ function WikiPage() {
 
     return (
         <div className="wiki-page-wrapper py-4">
-            <div className="container-fluid px-md-5" style={{ maxWidth: '1600px' }}>
+            <div className="container-fluid px-2 px-md-5" style={{ maxWidth: '1600px' }}>
                 <div className="row g-4">
+
                     <aside className="col-xl-2 col-lg-2 d-none d-lg-block">
-                       
-                            <div className="sticky-top" style={{ top: '100px', zIndex: 10 }}>
-                                <div className="toc-wrapper">
-                                    <h6 className="text-uppercase fw-bold text-muted mb-3" style={{ fontSize: '0.65rem', letterSpacing: '0.5px' }}>
-                                        {getTranslate('toc')}
-                                    </h6>
+                        <div className="sticky-top" style={{ top: '100px', zIndex: 10 }}>
+                            <div className="toc-wrapper">
+                                <h6 className="text-uppercase fw-bold text-muted mb-3" style={{ fontSize: '0.65rem', letterSpacing: '0.5px' }}>
+                                    {getTranslate('toc')}
+                                </h6>
                                 {headings.length > 0 && (
                                     <nav className="nav flex-column border-start border-2 border-light">
                                         {headings.map((h) => (
@@ -58,38 +60,61 @@ function WikiPage() {
                                                 {h.text}
                                             </a>
                                         ))}
-                                        <a href="#comments-section" onClick={(e) => handleNavClick(e, 'comments-section')}
-                                            className="nav-link py-1 toc-link fw-bold text-primary mt-2">
-                                            {getTranslate('comments')}
-                                        </a>
                                     </nav>
                                 )}
-                                </div>
+                                <nav>
+                                    <a href="#comments-section" onClick={(e) => handleNavClick(e, 'comments-section')}
+                                        className="nav-link py-1 toc-link fw-bold text-primary mt-2">
+                                        {getTranslate('comments')}
+                                    </a>
+                                </nav>
                             </div>
+                        </div>
                     </aside>
 
                     <main className="col-xl-10 col-lg-9 col-12">
-                        <div className="d-flex justify-content-between align-items-center mb-4">
-                            <h1 className="display-5 fw-bold m-0 text-dark">{translation?.title || wiki.name}</h1>
+                        <div className="d-lg-none mb-4">
+                            <button
+                                className="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
+                                onClick={() => setIsTocOpen(!isTocOpen)}
+                            >
+                                {getTranslate('toc')} <span>{isTocOpen ? '▲' : '▼'}</span>
+                            </button>
+                            {isTocOpen && (
+                                <div className="mt-2 p-2 bg-white border rounded shadow-sm">
+                                    {headings.map((h) => (
+                                        <a key={h.id} href={`#${h.id}`} onClick={(e) => { handleNavClick(e, h.id); setIsTocOpen(false); }} className="d-block py-1 text-decoration-none text-dark" style={{ fontSize: '0.9rem' }}>
+                                            {h.text}
+                                        </a>
+                                    ))}
+                                    <a href="#comments-section" onClick={(e) => handleNavClick(e, 'comments-section')}
+                                        className="d-block py-1 text-decoration-none text-dark" style={{ fontSize: '0.9rem' }}>
+                                        {getTranslate('comments')}
+                                    </a>
+                                </div>
+                            )}
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                            <h1 className="display-6 fw-bold m-0 text-dark">{translation?.title || wiki?.name}</h1>
                             {isAuthor && (
                                 <button
-                                    onClick={() => navigate(`/wikis/${wiki.name}/edit`)}
-                                    className="btn btn-primary rounded-pill px-4 shadow-sm"
+                                    onClick={() => navigate(`/wikis/${wiki?.name}/edit`)}
+                                    className="btn btn-primary rounded-pill px-3 px-md-4 shadow-sm"
                                 >
-                                    <FiEdit3 className="me-2" /> {getTranslate('edit')}
+                                    <FiEdit3 className="me-md-2" />
+                                    <span className="d-none d-md-inline">{getTranslate('edit')}</span>
                                 </button>
                             )}
                         </div>
 
                         <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-                            <div className="card-body p-4 p-lg-5">
+                            <div className="card-body p-3 p-lg-5">
                                 {translation ? (
                                     <div className="wiki-main-layout">
                                         <WikiInfobox
                                             infoboxDataString={translation.infoboxData}
                                             title={translation.title}
                                         />
-
                                         <article
                                             key={translation.id} //
                                             className="wiki-article-body"

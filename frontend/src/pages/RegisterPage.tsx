@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocale } from '../contexts/LocaleContext';
@@ -7,7 +7,7 @@ import './LoginPage.css';
 
 function RegisterPage() {
     const navigate = useNavigate();
-    const { register, confirmRegister, isLoading: authLoading } = useAuth();
+    const { register, confirmRegister, isLoading: authLoading, isAuthenticated } = useAuth();
     const { getTranslate } = useLocale();
 
     const [step, setStep] = useState<'FORM' | 'OTP'>('FORM');
@@ -20,6 +20,11 @@ function RegisterPage() {
 
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (isAuthenticated)
+            navigate("/");
+    }, [isAuthenticated]);
 
     const handleInitiate = async (e: React.FormEvent) => {
         e.preventDefault();

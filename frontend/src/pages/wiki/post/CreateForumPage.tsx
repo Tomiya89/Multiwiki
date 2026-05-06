@@ -47,33 +47,33 @@ function CreateForumPage() {
 
     return (
         <div className="container py-4" style={{ minHeight: '100vh', background: '#f8f9fa' }}>
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                 <button
                     onClick={() => navigate(-1)}
                     className="btn btn-link text-dark text-decoration-none p-0 d-flex align-items-center gap-2 fw-medium"
                 >
-                    <FiArrowLeft /> {getTranslate('backBtn')}
+                    <FiArrowLeft />
+                    <span className="d-none d-md-inline">{getTranslate('backBtn')}</span>
                 </button>
 
                 <button
-                    className="btn btn-primary rounded-pill px-4 shadow-sm fw-bold"
+                    className="btn btn-primary rounded-pill px-3 px-md-4 shadow-sm fw-bold"
                     onClick={handleCreate}
                     disabled={loading}
                 >
                     {loading ? (
-                        <span className="spinner-border spinner-border-sm me-2" />
+                        <span className="spinner-border spinner-border-sm me-md-2" />
                     ) : (
-                        <FiSave className="me-2" />
+                        <FiSave className="me-md-2" />
                     )}
-                    {getTranslate('createPost')}
+                    <span className="d-none d-md-inline">{getTranslate('createPost')}</span>
                 </button>
             </div>
 
-
-            <div className="card border-0 shadow-sm rounded-4 p-4 bg-white mx-auto" style={{ maxWidth: '900px' }}>
+            <div className="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white mx-auto" style={{ maxWidth: '900px' }}>
                 <input
                     className="form-control form-control-lg border-0 bg-transparent fw-bold mb-3 p-0"
-                    style={{ fontSize: '2rem', outline: 'none', boxShadow: 'none' }}
+                    style={{ fontSize: '1.5rem', outline: 'none', boxShadow: 'none' }}
                     placeholder={getTranslate('postTitlePlaceholder')}
                     value={title}
                     onChange={e => setTitle(e.target.value)}

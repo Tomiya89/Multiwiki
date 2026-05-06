@@ -74,6 +74,7 @@ const ForumsPage = () => {
                     <FiPlus /> {getTranslate('createPost')}
                 </Link>
             </div>
+
             <div className="mb-4">
                 <div className="input-group shadow-sm">
                     <input
@@ -91,19 +92,13 @@ const ForumsPage = () => {
                 </div>
             </div>
 
-            <div className="table-responsive bg-white rounded shadow-sm">
+            <div className="table-responsive bg-white rounded shadow-sm d-none d-md-block">
                 <table className="table table-hover align-middle mb-0">
                     <thead className="table-light">
                         <tr>
-                            <th className="cursor-pointer" onClick={() => handleSort('title')}>
-                                {getTranslate("name")} <SortIcon field="title" />
-                            </th>
-                            <th className="cursor-pointer" onClick={() => handleSort('likesCount')}>
-                                {getTranslate("likes")} <SortIcon field="likesCount" />
-                            </th>
-                            <th className="cursor-pointer" onClick={() => handleSort('createdAt')}>
-                                {getTranslate('date')} <SortIcon field="createdAt" />
-                            </th>
+                            <th className="cursor-pointer" onClick={() => handleSort('title')}>{getTranslate("name")} <SortIcon field="title" /></th>
+                            <th className="cursor-pointer" onClick={() => handleSort('likesCount')}>{getTranslate("likes")} <SortIcon field="likesCount" /></th>
+                            <th className="cursor-pointer" onClick={() => handleSort('createdAt')}>{getTranslate('date')} <SortIcon field="createdAt" /></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -114,8 +109,7 @@ const ForumsPage = () => {
                                 <tr key={post.id} onClick={() => navigate(`/wikis/${wiki?.name}/forums/${post.id}`)} style={{ cursor: 'pointer' }}>
                                     <td>
                                         <div className="d-flex align-items-center">
-                                            <img src={post.user.avatar ? getFullImageURL(post.user.avatar) : '/default-avatar.png'}
-                                                className="rounded-circle me-3 border" width="32" height="32" alt="" />
+                                            <img src={post.user.avatar ? getFullImageURL(post.user.avatar) : '/default-avatar.png'} className="rounded-circle me-3 border" width="32" height="32" alt="" />
                                             <div>
                                                 <div className="fw-bold">{post.title}</div>
                                                 <small className="text-muted">@{post.user.username}</small>
@@ -131,6 +125,32 @@ const ForumsPage = () => {
                         )}
                     </tbody>
                 </table>
+            </div>
+
+            <div className="d-md-none">
+                {loading ? (
+                    <div className="text-center p-4">{getTranslate('loading')}</div>
+                ) : pageData?.content && pageData.content.length > 0 ? (
+                    pageData.content.map((post) => (
+                        <div key={post.id} className="card shadow-sm mb-3" onClick={() => navigate(`/wikis/${wiki?.name}/forums/${post.id}`)}>
+                            <div className="card-body">
+                                <h6 className="fw-bold mb-2">{post.title}</h6>
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <div className="d-flex align-items-center text-muted small">
+                                        <img src={post.user.avatar ? getFullImageURL(post.user.avatar) : '/default-avatar.png'} className="rounded-circle me-2" width="24" height="24" alt="" />
+                                        @{post.user.username}
+                                    </div>
+                                    <div className="d-flex gap-3 text-muted small">
+                                        <span><FiThumbsUp className="me-1" />{post.likesCount}</span>
+                                        <span><FiCalendar className="me-1" />{new Date(post.createdAt).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="text-center p-4 text-muted">{getTranslate("postsNotFound")}</div>
+                )}
             </div>
 
             {pageData && pageData.totalPages > 1 && (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocale } from '../contexts/LocaleContext';
@@ -7,7 +7,7 @@ import './LoginPage.css';
 
 function LoginPage() {
     const navigate = useNavigate();
-    const { login, isLoading: authLoading } = useAuth();
+    const { login, isLoading: authLoading, isAuthenticated } = useAuth();
     const { getTranslate } = useLocale();
 
     const [email, setEmail] = useState('');
@@ -28,6 +28,11 @@ function LoginPage() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (isAuthenticated)
+            navigate("/");
+    }, [isAuthenticated]);
 
     const isLoading = loading || authLoading;
 

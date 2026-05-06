@@ -62,7 +62,7 @@ const SearchPage = () => {
     };
 
     return (
-        <div className="container py-5">
+        <div className="container py-3 py-md-5">
             <div className="row justify-content-center">
                 <div className="col-lg-8">
                     <h2 className="mb-4">{getTranslate("searchWiki")}</h2>
@@ -88,13 +88,13 @@ const SearchPage = () => {
                                     results.content.map((item) => (
                                         <div
                                             key={item.id}
-                                            className="list-group-item p-4 cursor-pointer hover-bg-light"
+                                            className="list-group-item p-3 cursor-pointer hover-bg-light"
                                             onClick={() => {
                                                 setLocale(item.locale);
                                                 navigate(item.url)
                                             }}
                                         >
-                                            <h5 className="mb-1">{item.title}</h5>
+                                            <h5 className="mb-1 text-truncate">{item.title}</h5>
                                             <div className="d-flex gap-2">
                                                 <span className="badge bg-secondary text-white">{item.locale}</span>
                                                 <span className="badge bg-primary-subtle text-primary border border-primary-subtle">

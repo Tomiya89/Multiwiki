@@ -69,21 +69,22 @@ function WikiSettingsPage() {
 
     return (
         <div className="mx-auto" style={{ maxWidth: '800px' }}>
-            <h2 className="fw-bold mb-4">{getTranslate('wikiSettings')}</h2>
+            <h2 className="fw-bold mb-4 px-2">{getTranslate('wikiSettings')}</h2>
 
             {error && (
-                <div className="alert alert-danger border-0 shadow-sm rounded-4 mb-4 py-3">
+                <div className="alert alert-danger border-0 shadow-sm rounded-4 mb-4 py-3 mx-2">
                     {error}
                 </div>
             )}
 
             <div className="card border-0 shadow-sm rounded-4 mb-4">
-                <div className="card-body p-4">
+                <div className="card-body p-3 p-md-4">
                     <h5 className="fw-bold d-flex align-items-center gap-2 mb-3">
                         <FiLink className="text-primary" /> {getTranslate('urlChangeTitle')}
                     </h5>
                     <p className="text-muted small">{getTranslate('urlChangeDescription')}</p>
-                    <div className="d-flex gap-2">
+                    
+                    <div className="d-flex flex-column flex-md-row gap-2">
                         <div className="input-group">
                             <span className="input-group-text bg-light">/wikis/</span>
                             <input
@@ -94,7 +95,7 @@ function WikiSettingsPage() {
                             />
                         </div>
                         <button
-                            className="btn btn-primary px-4"
+                            className="btn btn-primary px-4 w-100 w-md-auto"
                             onClick={handleUpdateName}
                             disabled={saving || !newName || newName === wiki?.name}
                         >
@@ -105,13 +106,13 @@ function WikiSettingsPage() {
             </div>
 
             <div className="card border-0 shadow-sm rounded-4">
-                <div className="card-body p-4">
+                <div className="card-body p-3 p-md-4">
                     <h5 className="fw-bold d-flex align-items-center gap-2 mb-4">
                         <FiImage className="text-primary" /> {getTranslate('visualSettings')}
                     </h5>
 
-                    <div className="row g-4">
-                        <div className="col-md-6">
+                    <div className="row g-3 g-md-4">
+                        <div className="col-12 col-md-6">
                             <label className="form-label fw-medium">{getTranslate('backgroundImage')}</label>
                             <div className="upload-zone position-relative rounded-3 border d-flex align-items-center justify-content-center overflow-hidden bg-light" style={{ height: '160px' }}>
                                 {background ? (
@@ -131,36 +132,21 @@ function WikiSettingsPage() {
                                             <FiUpload size={28} className="text-primary" />
                                         </div>
                                         <span className="small fw-bold text-secondary">{getTranslate('upload')}</span>
-                                        <input
-                                            type="file"
-                                            className="d-none"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, 'bg')}
-                                        />
+                                        <input type="file" className="d-none" accept="image/*" onChange={(e) => handleFileChange(e, 'bg')} />
                                     </label>
                                 )}
                             </div>
                         </div>
 
-                        <div className="col-md-6">
+                        <div className="col-12 col-md-6">
                             <label className="form-label fw-medium">{getTranslate('cardImage')}</label>
-
-                            <div className="upload-zone position-relative rounded-3 border overflow-hidden shadow-sm"
-                                style={{ height: '230px', transition: 'all 0.3s' }}>
-
+                            <div className="upload-zone position-relative rounded-3 border overflow-hidden shadow-sm" style={{ height: '230px', transition: 'all 0.3s' }}>
                                 {card ? (
                                     <div className="w-100 h-100 bg-white">
-                                        <img
-                                            src={`${getFullImageURL(card)}`}
-                                            className="w-100"
-                                            alt="Preview"
-                                            style={{ height: '160px', objectFit: 'cover' }}
-                                        />
-
+                                        <img src={`${getFullImageURL(card)}`} className="w-100" alt="Preview" style={{ height: '160px', objectFit: 'cover' }} />
                                         <div className="p-3">
                                             <div className="bg-light rounded-pill" style={{ height: '15px', width: '60%' }}></div>
                                         </div>
-
                                         <button
                                             onClick={(e) => { e.preventDefault(); deleteCard(); }}
                                             className="btn btn-danger btn-sm position-absolute shadow"
@@ -178,13 +164,7 @@ function WikiSettingsPage() {
                                             <FiUpload />
                                             <span className="small fw-bold">{getTranslate('upload')}</span>
                                         </div>
-
-                                        <input
-                                            type="file"
-                                            className="d-none"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, 'card')}
-                                        />
+                                        <input type="file" className="d-none" accept="image/*" onChange={(e) => handleFileChange(e, 'card')} />
                                     </label>
                                 )}
                             </div>

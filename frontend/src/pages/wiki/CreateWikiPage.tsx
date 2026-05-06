@@ -8,7 +8,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 function CreateWikiPage() {
     const navigate = useNavigate();
-    const { user, isLoading } = useAuth();
+    const { user, isLoading, isAuthenticated } = useAuth();
     const { getTranslate } = useLocale();
 
     const [url, setUrl] = useState('');
@@ -37,9 +37,9 @@ function CreateWikiPage() {
     useEffect(() => {
         if (isLoading) return;
 
-        if (user == null)
+        if (!isAuthenticated)
             navigate('/login');
-    }, [isLoading, user]);
+    }, [isLoading, user, isAuthenticated]);
 
     return (
         <div className="auth-container d-flex align-items-center justify-content-center animate-fade-in">

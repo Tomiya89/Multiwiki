@@ -25,3 +25,13 @@ body,
 .backdrop-blur {
     backdrop-filter: blur(10px);
 }
+
+
+img:error,
+img[src=""],
+img[src="#"],
+img:not([src]),
+img[src*="null"],
+img[src*="undefined"] {
+    content: url('/public/default.jpg') !important;
+}

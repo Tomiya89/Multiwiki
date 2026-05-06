@@ -54,7 +54,8 @@ export const ArticleProvider = ({ children }: { children: ReactNode }) => {
                         `/wikis/${wikiName}/categories/${categoryName}/articles/${articleName}`
                     );
                     setArticle(artData);
-                    setAvailableTranslations(artData?.transaltions);
+                    if (artData?.transaltions)
+                        setAvailableTranslations(artData?.transaltions);
                 }
 
                 try {

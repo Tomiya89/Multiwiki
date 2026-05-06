@@ -5,6 +5,8 @@ import PageResponse from '../entities/PageResponse';
 import MessageItem from './MessageItem';
 import { useLocale } from '../contexts/LocaleContext';
 
+import "./MessageList.css";
+
 interface MessageListProps {
     apiUrl: string;
 }

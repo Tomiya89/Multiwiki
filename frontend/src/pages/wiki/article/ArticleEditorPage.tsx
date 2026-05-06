@@ -85,26 +85,32 @@ function ArticleEditorPage() {
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <button
                     onClick={() => navigate(-1)}
-                    className="btn btn-link text-dark text-decoration-none p-0 d-flex align-items-center gap-2 fw-medium"
+                    className="btn btn-link text-dark text-decoration-none p-0 d-flex align-items-center fw-medium"
                 >
-                    <FiArrowLeft /> {getTranslate('backBtn')}
+                    <FiArrowLeft />
+                    <span className="d-none d-md-inline ms-1">{getTranslate('backBtn')}</span>
                 </button>
+
                 <button
-                    className="btn btn-primary rounded-pill px-4 shadow-sm fw-bold"
+                    className="btn btn-primary rounded-pill px-3 px-md-4 shadow-sm fw-bold d-flex align-items-center"
                     onClick={handleSave}
                     disabled={loading}
                 >
-                    {loading ? <span className="spinner-border spinner-border-sm me-2" /> : <FiSave className="me-2" />}
-                    {getTranslate('save')}
+                    {loading ? (
+                        <span className="spinner-border spinner-border-sm" />
+                    ) : (
+                        <FiSave />
+                    )}
+                    <span className="d-none d-md-inline ms-2">{getTranslate('save')}</span>
                 </button>
             </div>
 
             <div className="row g-4">
-                <div className="col-lg-8">
-                    <div className="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div className="col-lg-8 col-12">
+                    <div className="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white">
                         <input
                             className="form-control form-control-lg border-0 bg-transparent fw-bold mb-3 p-0"
-                            style={{ fontSize: '2.5rem', outline: 'none', boxShadow: 'none' }}
+                            style={{ fontSize: '1.75rem', outline: 'none', boxShadow: 'none' }}
                             placeholder={getTranslate("editNameArticle")}
                             value={title}
                             onChange={e => setTitle(e.target.value)}
@@ -113,7 +119,7 @@ function ArticleEditorPage() {
                     </div>
                 </div>
 
-                <div className="col-lg-4">
+                <div className="col-lg-4 col-12">
                     <InfoboxEditor data={infobox} onChange={setInfobox} />
                 </div>
             </div>

@@ -81,18 +81,18 @@ const CategoriesPage = () => {
 
     return (
         <div className="categories-page-wrapper py-4">
-            <div className="container-fluid px-md-5" style={{ maxWidth: '1600px' }}>
+            <div className="container-fluid px-3 px-md-5" style={{ maxWidth: '1600px' }}>
                 <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h1 className="display-5 fw-bold m-0 text-dark uppercase tracking-tighter">
+                    <h1 className="h2 display-md-5 fw-bold m-0 text-dark uppercase tracking-tighter">
                         {getTranslate('categories')}
                     </h1>
                     {isAuthor && (
                         <button
                             onClick={() => navigate(`/wikis/${wiki.name}/categories/create`)}
-                            className="btn btn-primary rounded-pill px-4 shadow-sm d-flex align-items-center gap-2"
+                            className="btn btn-primary rounded-pill px-3 px-md-4 shadow-sm d-flex align-items-center gap-2"
                         >
                             <FiPlus size={20} />
-                            <span>{getTranslate('createCategoryTitle')}</span>
+                            <span className="d-none d-md-inline">{getTranslate('createCategoryTitle')}</span>
                         </button>
                     )}
                 </div>
@@ -106,7 +106,7 @@ const CategoriesPage = () => {
                         ) : (
                             <div className="categories-list">
                                 {Object.keys(grouped).map(letter => (
-                                    <div key={letter} className="mb-5">
+                                    <div key={letter} className="mb-4 mb-md-5">
                                         <h2 className="letter-group-title">{letter}</h2>
                                         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
                                             {grouped[letter].map(cat => (

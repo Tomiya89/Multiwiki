@@ -204,4 +204,4 @@ class ApiClient{
     }
 }
 
-export default new ApiClient("https://localhost:8443/api");
+export default new ApiClient("/api");

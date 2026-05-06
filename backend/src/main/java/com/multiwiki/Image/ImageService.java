@@ -118,6 +118,8 @@ public class ImageService {
     }
 
     public void deleteImage(Image image){
+        if(image == null)
+            return;
         try {
             Path file = Paths.get(this.uploadPath).resolve(image.getFilename());
             Files.deleteIfExists(file);

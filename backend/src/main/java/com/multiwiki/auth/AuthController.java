@@ -208,12 +208,11 @@ public class AuthController {
         return ResponseEntity.ok().body(new Response());
     }
 
-    private void setRefreshTokenCookie(String token, HttpServletResponse response){
+     private void setRefreshTokenCookie(String token, HttpServletResponse response){
         Cookie cookie = new Cookie("refreshToken", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/api/auth/");
-        cookie.setAttribute("SameSite", "None");
+        cookie.setSecure(false);
+        cookie.setPath("/");
         cookie.setMaxAge((int)(this.refreshExpiration / 1000L));
         response.addCookie(cookie);
     }
@@ -221,8 +220,8 @@ public class AuthController {
     private void clearRefreshTokenCookie(HttpServletResponse response){
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/api/auth/");
+        cookie.setSecure(false);
+        cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }

@@ -60,7 +60,7 @@ function CategorySettingsPage() {
     };
 
     return (
-        <div className="mx-auto py-4" style={{ maxWidth: '800px' }}>
+        <div className="container px-3 py-4" style={{ maxWidth: '800px' }}>
             <button
                 onClick={() => navigate(`/wikis/${wiki?.name}/categories/${category?.name}`)}
                 className="btn btn-link text-muted p-0 mb-3 text-decoration-none d-flex align-items-center gap-2"
@@ -68,7 +68,7 @@ function CategorySettingsPage() {
                 <FiArrowLeft /> {getTranslate('backBtn')}
             </button>
 
-            <h2 className="fw-bold mb-4">{getTranslate('categorySettings')}</h2>
+            <h2 className="fw-bold mb-4 fs-3">{getTranslate('categorySettings')}</h2>
 
             {error && (
                 <div className="alert alert-danger border-0 shadow-sm rounded-4 mb-4 py-3">
@@ -84,10 +84,9 @@ function CategorySettingsPage() {
                     <p className="text-muted small">
                         {getTranslate('categoryUrlChangeDescription')}
                     </p>
-
-                    <div className="d-flex gap-2">
+                    <div className="d-flex flex-column flex-sm-row gap-2">
                         <div className="input-group">
-                            <span className="input-group-text bg-light text-muted small">
+                            <span className="input-group-text bg-light text-muted small d-none d-md-flex">
                                 .../categories/
                             </span>
                             <input
@@ -99,7 +98,7 @@ function CategorySettingsPage() {
                             />
                         </div>
                         <button
-                            className="btn btn-primary px-4 shadow-sm"
+                            className="btn btn-primary px-4 shadow-sm w-100 w-sm-auto"
                             onClick={handleUpdateName}
                             disabled={saving || !newName || newName === category?.name}
                         >

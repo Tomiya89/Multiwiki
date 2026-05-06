@@ -59,7 +59,7 @@ const InfoboxEditor: React.FC<Props> = ({ data, onChange }) => {
     };
 
     return (
-        <div className="card border-0 shadow-sm rounded-4 p-3 bg-white sticky-top" style={{ top: '20px', zIndex: 10 }}>
+        <div className="card border-0 shadow-sm rounded-4 p-3 bg-white w-100" style={{ maxWidth: '800px', margin: '0 auto', zIndex: 10 }}>
             <h6 className="fw-bold mb-3 d-flex align-items-center gap-2 text-primary">
                 <FiInfo /> {getTranslate('infoboxSettings')}
             </h6>

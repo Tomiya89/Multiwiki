@@ -113,7 +113,8 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isNew, onDelete, onR
                 className={`d-flex align-items-start p-3 border-bottom ${level > 0 ? 'bg-light' : 'bg-white'}`}
                 style={{
                     borderLeft: level > 0 ? '4px solid #0d6efd' : 'none',
-                    marginLeft: level > 0 ? '10px' : '0px'
+                    marginLeft: level > 0 ? (window.innerWidth < 576 ? '5px' : '10px') : '0px',
+                    touchAction: 'manipulation'
                 }}
             >
                 <img
@@ -128,9 +129,13 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isNew, onDelete, onR
                     }}
                 />
                 <div className="flex-grow-1">
-                    <div className="d-flex justify-content-between">
-                        <span className="fw-bold">{message.user?.username || 'User'}</span>
-                        <small className="text-muted">{new Date(message.createdAt).toLocaleString()}</small>
+                    <div className="d-flex justify-content-between align-items-center flex-wrap mb-1">
+                        <span className="fw-bold text-truncate" style={{ maxWidth: '65%' }}>
+                            {message.user?.username || 'User'}
+                        </span>
+                        <small className="text-muted text-nowrap ms-2">
+                            {new Date(message.createdAt).toLocaleDateString()}
+                        </small>
                     </div>
                     {message.status === 'DELETED' ? <div className="p-2 mb-2 text-muted fst-italic" style={{ paddingLeft: `${level * 20}px` }}>
                         <small>{getTranslate('msgIsDeleted')}</small>
@@ -141,16 +146,32 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isNew, onDelete, onR
                         <button
                             onClick={handleLike}
                             className={`btn btn-sm d-flex align-items-center gap-1 ${like ? 'text-primary' : 'text-muted'}`}
-                            style={{ border: 'none', background: 'transparent' }}>
+                            style={{ border: 'none', background: 'transparent' }}
+                            aria-label={getTranslate('like')}
+                        >
                             <FiThumbsUp size={16} fill={like ? 'currentColor' : 'none'} />
                             <small>{likesCount}</small>
                         </button>
-                        <button className="btn btn-sm btn-link text-decoration-none p-0" onClick={() => setIsReplying(!isReplying)}>
-                            <FiCornerDownLeft /> {isReplying ? getTranslate('cancelBtn') : getTranslate('answerBtn')}
+
+                        <button
+                            className="btn btn-sm btn-link text-decoration-none p-0"
+                            onClick={() => setIsReplying(!isReplying)}
+                            aria-label={isReplying ? getTranslate('cancelBtn') : getTranslate('answerBtn')}
+                        >
+                            <FiCornerDownLeft />
+                            <span className="d-none d-sm-inline ms-1">
+                                {isReplying ? getTranslate('cancelBtn') : getTranslate('answerBtn')}
+                            </span>
                         </button>
+
                         {canDelete && (
-                            <button className="btn btn-sm btn-link text-decoration-none p-0 text-danger" onClick={() => onDelete(message.id)}>
-                                <FiTrash2 /> {getTranslate('delete')}
+                            <button
+                                className="btn btn-sm btn-link text-decoration-none p-0 text-danger"
+                                onClick={() => onDelete(message.id)}
+                                aria-label={getTranslate('delete')}
+                            >
+                                <FiTrash2 />
+                                <span className="d-none d-sm-inline ms-1">{getTranslate('delete')}</span>
                             </button>
                         )}
                     </div>

@@ -64,26 +64,25 @@ function CreateArticlePage() {
     }
 
     return (
-        <div className="py-4 d-flex justify-content-center animate-fade-in">
+        <div className="py-4 px-3 d-flex justify-content-center animate-fade-in">
             <div style={{ maxWidth: '600px', width: '100%' }}>
-
                 <button
                     onClick={() => navigate(-1)}
-                    className="btn btn-link text-decoration-none text-muted mb-4 p-0 d-flex align-items-center gap-2"
+                    className="btn btn-link text-decoration-none text-muted mb-3 mb-md-4 p-0 d-flex align-items-center gap-2"
                 >
                     <FiArrowLeft /> {getTranslate('backBtn')}
                 </button>
 
-                <div className="mb-5 text-center text-md-start">
-                    <h2 className="display-6 fw-bold text-dark mb-2">
+                <div className="mb-4 mb-md-5 text-center text-md-start">
+                    <h2 className="fs-3 fs-md-2 fw-bold text-dark mb-2">
                         {getTranslate('createArticleTitle')}
                     </h2>
-                    <p className="text-muted">
-                        {getTranslate('addingToCategory')}: <span className="badge bg-secondary">{category?.name}</span>
+                    <p className="text-muted small">
+                        {getTranslate('addingToCategory')}: <span className="badge bg-secondary text-white">{category?.name}</span>
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+                <form onSubmit={handleSubmit} className="bg-white p-3 p-md-5 rounded-4 border shadow-sm">
                     <div className="mb-4">
                         <label className="form-label small fw-bold text-uppercase text-muted">
                             {getTranslate('articleUrlLabel')}
@@ -102,7 +101,7 @@ function CreateArticlePage() {
                                 autoFocus
                             />
                         </div>
-                        <div className="mt-2 small text-muted px-1">
+                        <div className="mt-2 small text-muted px-1 text-break">
                             /wikis/{wiki?.name}/categories/{category?.name}/articles/<strong>{name || '...'}</strong>
                         </div>
                     </div>
