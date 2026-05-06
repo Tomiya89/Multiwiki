@@ -11,7 +11,7 @@ import MessageList from '../../../components/MessageList';
 const ForumPage = () => {
     const { wikiName, postId } = useParams();
     const navigate = useNavigate();
-    const { user, isLoading } = useAuth();
+    const { user, isLoading, isAuthenticated } = useAuth();
     const { getTranslate } = useLocale();
 
     const [post, setPost] = useState<Post | null>(null);
@@ -70,6 +70,7 @@ const ForumPage = () => {
                 <div className="d-flex gap-2">
                     <button
                         onClick={handleLike}
+                        disabled={!isAuthenticated}
                         className={`btn ${like ? 'btn-primary' : 'btn-light'} rounded-pill px-3 shadow-sm border`}
                     >
                         <FiThumbsUp className={`me-1 ${like ? 'text-white' : 'text-primary'}`} />

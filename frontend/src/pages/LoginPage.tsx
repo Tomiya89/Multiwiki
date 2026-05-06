@@ -112,6 +112,9 @@ function LoginPage() {
                                 {getTranslate('noAccount')}{' '}
                                 <Link to="/register" className="text-primary fw-bold text-decoration-none">
                                     {getTranslate('registerLink')}
+                                </Link> <br/>
+                                <Link to="/forgot-password" className="text-primary fw-bold text-decoration-none">
+                                    {getTranslate('forgotPassword')}
                                 </Link>
                             </p>
                         </div>

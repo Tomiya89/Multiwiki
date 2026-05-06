@@ -6,6 +6,9 @@ import MessageItem from './MessageItem';
 import { useLocale } from '../contexts/LocaleContext';
 
 import "./MessageList.css";
+import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
+import { FiLogIn } from 'react-icons/fi';
 
 interface MessageListProps {
     apiUrl: string;
@@ -13,6 +16,7 @@ interface MessageListProps {
 
 const MessageList: React.FC<MessageListProps> = ({ apiUrl }) => {
     const { getTranslate } = useLocale();
+    const { isAuthenticated } = useAuth();
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
     const [newBody, setNewBody] = useState('');
@@ -90,16 +94,34 @@ const MessageList: React.FC<MessageListProps> = ({ apiUrl }) => {
     return (
         <section id="comments-section">
             <div className="message-list-container pt-3">
-                <div className="card p-3 mb-4 shadow-sm border-0 rounded-4">
-                    <textarea
-                        className="form-control"
-                        rows={3}
-                        value={newBody}
-                        onChange={(e) => setNewBody(e.target.value)}
-                        placeholder={getTranslate('yourComment')}
-                    />
-                    <button className="btn btn-primary mt-3" onClick={handleCreateNew}>{getTranslate("send")}</button>
-                </div>
+                {
+                    isAuthenticated ? (
+                    <div className="card p-3 mb-4 shadow-sm border-0 rounded-4">
+                        <textarea
+                            className="form-control"
+                            rows={3}
+                            value={newBody}
+                            onChange={(e) => setNewBody(e.target.value)}
+                            placeholder={getTranslate('yourComment')}
+                        />
+                        <button className="btn btn-primary mt-3" onClick={handleCreateNew}>{getTranslate("send")}</button>
+                    </div>) : 
+                    (
+                    <div className="card p-4 mb-4 shadow-sm border-0 rounded-4 bg-light text-center">
+                        <p className="text-muted mb-3">
+                            {getTranslate('loginToCommentText')}
+                        </p>
+                        <Link
+                            to="/login"
+                            className="btn btn-outline-primary rounded-pill px-4 d-inline-flex align-items-center justify-content-center gap-2"
+                        >
+                            <FiLogIn />
+                            {getTranslate("loginBtn")}
+                        </Link>
+                    </div>
+                    )
+                }
+               
 
                 <div className="message-list-items">
                     {messages && messages.filter(Boolean).map((msg, index) => (

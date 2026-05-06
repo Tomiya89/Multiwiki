@@ -19,11 +19,14 @@ import com.multiwiki.auth.requests.ChangePasswordRequest;
 import com.multiwiki.auth.requests.ConfirmEmailRequest;
 import com.multiwiki.auth.requests.ConfirmRegisterRequest;
 import com.multiwiki.auth.requests.CreateTokenRequest;
+import com.multiwiki.auth.requests.ForgotPasswordRequest;
 import com.multiwiki.auth.requests.RegisterRequest;
+import com.multiwiki.auth.requests.ResetPasswordRequest;
 import com.multiwiki.auth.responses.AuthErrorResponse;
 import com.multiwiki.auth.responses.AuthResponse;
 import com.multiwiki.auth.services.EmailChangeService;
 import com.multiwiki.auth.services.JwtService;
+import com.multiwiki.auth.services.PasswordResetService;
 import com.multiwiki.auth.services.PasswordService;
 import com.multiwiki.auth.services.RefreshTokenService;
 import com.multiwiki.auth.services.RegistrationService;
@@ -49,10 +52,11 @@ public class AuthController {
     private final JwtService jwtService;
     private final EmailChangeService emailChangeService;
     private final RegistrationService registrationService;
+    private final PasswordResetService passwordResetService;
 
     @Value("${jwt.refresh-expiration}")
     private long refreshExpiration;
-
+    
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request, HttpServletRequest httpRequest, HttpServletResponse response){
         try {
@@ -207,7 +211,17 @@ public class AuthController {
 
         return ResponseEntity.ok().body(new Response());
     }
+    
+    @PostMapping("/password/forgot")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        return this.passwordResetService.initiatePasswordReset(request.getEmail());
+    }
 
+    @PostMapping("/password/reset")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        return this.passwordResetService.confirmPasswordReset(request);
+    }
+    
      private void setRefreshTokenCookie(String token, HttpServletResponse response){
         Cookie cookie = new Cookie("refreshToken", token);
         cookie.setHttpOnly(true);

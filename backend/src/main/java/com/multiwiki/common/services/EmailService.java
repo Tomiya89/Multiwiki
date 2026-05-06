@@ -55,4 +55,22 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    public void sendPasswordResetCode(String to, String code) throws MessagingException {
+        String subject = "Password reset request";
+        String content = String.format(
+            "<p>Hello!</p>" +
+            "<p>You requested a password reset. Use the following code to reset your password:</p>" +
+            "<h2>%s</h2>" +
+            "<p>The code is valid for 10 minutes.</p>" +
+            "<p>If you did not request this, please ignore this message.</p>",
+            code);
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
+        helper.setFrom(fromEmail);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(content, true);
+        mailSender.send(message);
+    }
 }

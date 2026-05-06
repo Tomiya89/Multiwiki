@@ -17,7 +17,7 @@ interface MessageItemProps {
 
 const MessageItem: React.FC<MessageItemProps> = ({ message, isNew, onDelete, onReply, level = 0 }) => {
     const { getTranslate } = useLocale();
-    const { user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const [replies, setReplies] = useState<Message[]>([]);
     const [lastId, setLastId] = useState<number>(0);
     const [hasMore, setHasMore] = useState(true);
@@ -148,21 +148,24 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isNew, onDelete, onR
                             className={`btn btn-sm d-flex align-items-center gap-1 ${like ? 'text-primary' : 'text-muted'}`}
                             style={{ border: 'none', background: 'transparent' }}
                             aria-label={getTranslate('like')}
+                            disabled={!isAuthenticated}
                         >
                             <FiThumbsUp size={16} fill={like ? 'currentColor' : 'none'} />
                             <small>{likesCount}</small>
                         </button>
-
-                        <button
-                            className="btn btn-sm btn-link text-decoration-none p-0"
-                            onClick={() => setIsReplying(!isReplying)}
-                            aria-label={isReplying ? getTranslate('cancelBtn') : getTranslate('answerBtn')}
-                        >
-                            <FiCornerDownLeft />
-                            <span className="d-none d-sm-inline ms-1">
-                                {isReplying ? getTranslate('cancelBtn') : getTranslate('answerBtn')}
-                            </span>
-                        </button>
+                        {
+                            isAuthenticated ? (<button
+                                className="btn btn-sm btn-link text-decoration-none p-0"
+                                onClick={() => setIsReplying(!isReplying)}
+                                aria-label={isReplying ? getTranslate('cancelBtn') : getTranslate('answerBtn')}
+                            >
+                                <FiCornerDownLeft />
+                                <span className="d-none d-sm-inline ms-1">
+                                    {isReplying ? getTranslate('cancelBtn') : getTranslate('answerBtn')}
+                                </span>
+                            </button>): (<></>)
+                        }
+                        
 
                         {canDelete && (
                             <button

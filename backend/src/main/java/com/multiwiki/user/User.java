@@ -83,6 +83,12 @@ public class User implements UserDetails {
     @Column(name = "registrationCodeExpiry")
     private LocalDateTime registrationCodeExpiry;
 
+    @Column(name = "passwordResetCodeHash")
+    private String passwordResetCodeHash;
+
+    @Column(name = "passwordResetCodeExpiry")
+    private LocalDateTime passwordResetCodeExpiry;
+
     @Transient
     private boolean enabled = true;
     @Transient

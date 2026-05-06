@@ -179,6 +179,8 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.GET,"/api/messages/{messageId}/messages").permitAll()
 
+                .requestMatchers(HttpMethod.POST,"/api/auth/password/forgot").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/auth/password/reset").permitAll()
 
                 .requestMatchers(HttpMethod.GET,"/api/wikis").permitAll()
 

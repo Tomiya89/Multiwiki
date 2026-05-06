@@ -30,6 +30,7 @@ import ForumPage from './pages/wiki/post/ForumPage';
 import EditForumPage from './pages/wiki/post/EditForumPage';
 import SearchPage from './pages/wiki/SearchPage';
 import NotFoundPage from './pages/NotFoundPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
                   <Route index element={<HomePage />} />
                   <Route path='login' element={<LoginPage />} />
                   <Route path='register' element={<RegisterPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path='profile' element={<ProfilePage />} />
                   <Route path='create' element={<CreateWikiPage />} />
 
