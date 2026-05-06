@@ -29,6 +29,7 @@ import CreateForumPage from './pages/wiki/post/CreateForumPage';
 import ForumPage from './pages/wiki/post/ForumPage';
 import EditForumPage from './pages/wiki/post/EditForumPage';
 import SearchPage from './pages/wiki/SearchPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   return (
@@ -86,6 +87,7 @@ function App() {
                   </Route>
 
                 </Route>
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </ArticleProvider>
           </CategoryProvider>

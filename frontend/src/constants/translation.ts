@@ -40,6 +40,8 @@ export const translations: Record<string, Record<string, string>> = {
         backBtn: "Назад",
         enterCode: "Введите код",
         codeSentTo: "Код отправлен на",
+        pageNotFound: "Страница не найдена",
+        goHome: "Вернуться на главную страницу",
         codeSentDesc: "Мы отправили код подтверждения на",
         posts: "Посты",
         staff: "Права",
@@ -152,6 +154,8 @@ export const translations: Record<string, Record<string, string>> = {
         UPLOAD_PHOTO_ERROR: "Ошибка при загрузке изображения"
     },
     en: {
+        pageNotFound: "Page not found",
+        goHome: "Go home",
         login: "Log in",
         register: "Register",
         profile: "Profile",
