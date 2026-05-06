@@ -35,7 +35,7 @@ public class Wiki {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "name", nullable = false, unique = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "userId", nullable = false)
@@ -66,8 +66,6 @@ public class Wiki {
             this.createdAt = LocalDateTime.now();
         if (this.updatedAt == null) 
             this.updatedAt = LocalDateTime.now();
-        this.background = null;
-        this.card = null;
     }
 
     @PreUpdate

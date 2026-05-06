@@ -12,6 +12,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "translations")
+@Table(name = "translations", uniqueConstraints = {
+    @UniqueConstraint(name = "unique_translation", columnNames = {"translatableType", "translatableId", "locale"})
+})
 public class Translation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,13 +32,13 @@ public class Translation {
     @Column(name = "wikiId", nullable = false)
     private int wikiId;
 
-    @Column(name = "translatableType", nullable = false, unique = true)
+    @Column(name = "translatableType", nullable = false)
     private String translatableType;
 
-    @Column(name = "translatableId", nullable = false, unique = true)
+    @Column(name = "translatableId", nullable = false)
     private int translatableId;
 
-    @Column(name = "locale", nullable = false, unique = true)
+    @Column(name = "locale", nullable = false)
     private String locale;
 
     @Column(name = "title", nullable = false)

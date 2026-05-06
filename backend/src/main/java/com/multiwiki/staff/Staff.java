@@ -18,6 +18,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,18 +27,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "staffs")
+@Table(name = "staffs", uniqueConstraints = {
+    @UniqueConstraint(name = "unique_staffs", columnNames = {"wikiId", "userId"})
+})
 public class Staff {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY) 
-    @JoinColumn(name = "wikiId")
+    @JoinColumn(name = "wikiId", nullable = false)
     private Wiki wiki;
 
     @ManyToOne(fetch = FetchType.LAZY) 
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @Column(name = "role", nullable = false)

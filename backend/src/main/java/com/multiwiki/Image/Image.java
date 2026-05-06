@@ -28,13 +28,13 @@ public class Image {
     @Column(name = "userId", nullable = false)
     private int userId;
 
-    @Column(name = "type", nullable = false)
+    @Column(name = "type", nullable = false, length = 16)
     private String type;
 
-    @Column(name = "filename", nullable = false)
+    @Column(name = "filename", nullable = false, length = 256, unique = true)
     private String filename;
 
-    @Column(name = "url", nullable = false)
+    @Column(name = "url", nullable = false, length = 512)
     private String url;
 
     @Column(name = "fileSize", nullable = false)

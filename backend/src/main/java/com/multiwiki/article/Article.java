@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,22 +25,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "articles")
+@Table(name = "articles", uniqueConstraints = {
+    @UniqueConstraint(name = "articles_index", columnNames = {"wikiId", "categoryId", "name"})
+})
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "wikiId", nullable = false, unique = true)
+    @Column(name = "wikiId", nullable = false)
     private int wikiId;
 
-    @Column(name = "categoryId", nullable = false, unique = true)
+    @Column(name = "categoryId", nullable = false)
     private int categoryId;
 
-    @Column(name = "userId", nullable = false, unique = true)
+    @Column(name = "userId", nullable = false)
     private int userId;
 
     @Column(name = "createdAt", updatable = false)
