@@ -1,4 +1,4 @@
-const FALLBACK_IMAGE = '/public/default.jpg';
+const FALLBACK_IMAGE = '/Multiwiki/public/default.jpg';
 
 interface ImageElement extends HTMLImageElement {
     dataset: {

@@ -26,6 +26,16 @@ class ApiClient{
         this.baseURL = baseURL;
     }
 
+     private getDefaultOptions(options: RequestInit = {}): RequestInit {
+        return {
+            ...options,
+            credentials: 'include',
+            headers: {
+                ...options.headers
+            }
+        };
+    }
+
     private async request<T>(url: string, options: RequestInit = {}) : Promise<T>{
         const fullURL = this.baseURL + url;
         const headers = new Headers(options.headers);
@@ -33,7 +43,12 @@ class ApiClient{
         if(this.accessToken)
             headers.set('Authorization', `Bearer ${this.accessToken}`);
 
-        const config: RequestConfig  = {...options, headers, url: fullURL};
+        const config: RequestConfig = {
+            ...this.getDefaultOptions(options),
+            headers,
+            url: fullURL
+        };
+    
         return this._requestWithRetry<T>(config);
     }
 
@@ -204,4 +219,4 @@ class ApiClient{
     }
 }
 
-export default new ApiClient("/api");
+export default new ApiClient("https://localhost:8443/api");

@@ -1,20 +1,106 @@
-@media (max-width: 991px) {
-    .wiki-sidebar {
-        width: 100% !important;
-        border-right: none !important;
-        border-bottom: 1px solid #dee2e6;
-        position: relative !important;
-    }
-
-    .wiki-sidebar .sticky-top {
-        position: relative !important;
-        top: 0 !important;
-    }
+/* Общие настройки */
+html {
+    scroll-behavior: smooth;
 }
 
 body,
 #root {
     overflow-x: hidden;
+}
+
+.wiki-layout-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-height: calc(100vh - 72px);
+}
+
+@media (min-width: 992px) {
+    .wiki-layout-container {
+        flex-direction: row;
+    }
+}
+
+/* Сайдбар (Шторка) */
+.wiki-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    z-index: 1050;
+    background-color: rgba(248, 249, 250, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1.5rem 1rem;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Логика мобильной шторки */
+@media (max-width: 991px) {
+    .wiki-sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 280px !important;
+        transform: translateX(-100%); /* Прячем */
+        border-right: 1px solid #dee2e6 !important;
+    }
+
+    .wiki-sidebar.open {
+        transform: translateX(0); /* Показываем */
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sidebar-sticky-wrapper {
+        position: relative !important;
+        top: 0 !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .sidebar-sticky-wrapper {
+        position: sticky;
+        top: 90px;
+    }
+}
+
+/* Кнопка-бургер */
+.mobile-menu-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+/* Затемнение фона */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1040;
+    backdrop-filter: blur(2px);
+}
+
+/* Ссылки и эффекты */
+.nav-link-custom {
+    text-decoration: none;
+    color: #212529;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
 }
 
 .hover-effect {
@@ -27,82 +113,36 @@ body,
     transform: translateX(5px);
 }
 
-.content-card img,
-.content-card table {
-    max-width: 100%;
-    height: auto;
+/* Контентная часть */
+.wiki-main-content {
+    flex-grow: 1;
+    padding: 0.5rem;
+    z-index: 1;
+    min-width: 0;
 }
 
-
-html {
-    scroll-behavior: smooth;
+@media (min-width: 768px) {
+    .wiki-main-content {
+        padding: 1.5rem;
+    }
 }
 
+.content-card {
+    max-width: 1600px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    min-height: 100%;
+    padding: clamp(1rem, 3vw, 2.5rem);
+}
+
+/* Стилизация текста и элементов */
 .wiki-article-body {
     font-size: 1.1rem;
     line-height: 1.7;
     color: #1e293b;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    word-break: break-word;
-}
-
-.video-wrapper {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    background: #000;
-}
-
-.video-wrapper iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-}
-
-.wiki-infobox {
-    float: right;
-    width: 300px;
-    margin-left: 2.5rem;
-    margin-bottom: 1.5rem;
-}
-
-@media (max-width: 1200px) {
-    .wiki-infobox {
-        float: none;
-        width: 100%;
-        margin: 0 0 2rem 0;
-    }
-}
-
-.toc-link {
-    color: #64748b;
-    border-left: 2px solid transparent;
-    margin-left: -2px;
-    padding-left: 1rem;
-    transition: all 0.2s;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-decoration: none;
-}
-
-.toc-link:hover {
-    color: #0d6efd;
-    border-left-color: #0d6efd;
-    background: rgba(13, 110, 253, 0.05);
-}
-
-.toc-link.active {
-    color: #0d6efd;
-    border-left-color: #0d6efd;
-    font-weight: 600;
 }
 
 .wiki-article-body h2 {
@@ -121,18 +161,59 @@ html {
     scroll-margin-top: 100px;
 }
 
-.wiki-article-body img {
+.content-card img,
+.content-card table {
     max-width: 100%;
     height: auto;
-    border-radius: 12px;
 }
 
-.article-page-wrapper {
-    background-color: #f8fafc;
-    min-height: 100vh;
+/* Инфобокс */
+.wiki-infobox {
+    float: right;
+    width: 300px;
+    margin-left: 2.5rem;
+    margin-bottom: 1.5rem;
 }
 
-.category-page-wrapper {
-    background-color: #f8fafc;
-    min-height: 100vh;
+@media (max-width: 1200px) {
+    .wiki-infobox {
+        float: none;
+        width: 100%;
+        margin: 0 0 2rem 0;
+    }
+}
+
+/* Видео */
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background: #000;
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: 0;
+}
+
+/* Оглавление */
+.toc-link {
+    color: #64748b;
+    border-left: 2px solid transparent;
+    margin-left: -2px;
+    padding-left: 1rem;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: block;
+}
+
+.toc-link:hover, .toc-link.active {
+    color: #0d6efd;
+    border-left-color: #0d6efd;
+    background: rgba(13, 110, 253, 0.05);
 }
